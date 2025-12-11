@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: sentiment
+  profiles:
+    active: dev
+
+server:
+  port: 8081
+
+  datasource:
+    url: jdbc:h2:mem:devdb
+    driverClassName: org.h2.Driver
+    username: sa
+    password: password
+
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    cache: false
