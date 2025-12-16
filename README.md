@@ -1,6 +1,5 @@
 # HackathonONE (Oracle + Alura)
 
-
 # 📊 SentimentoAPI - Análise de Sentimento com IA e Microserviços
 
 > **Hackathon MVP**: Solução automatizada para classificação de feedbacks de clientes utilizando Processamento de Linguagem Natural (NLP).
@@ -15,25 +14,57 @@ Empresas recebem milhares de comentários diariamente e não conseguem ler todos
 
 -----
 
+## 🚀 Tecnologias
+
+<div>
+  <img src="https://img.shields.io/badge/Java-17-blue?style=for-the-badge&logo=java&logoColor=white">
+  <img src="https://img.shields.io/badge/Spring_Boot-3.0.6-green?style=for-the-badge&logo=springboot&logoColor=white">
+  <img src="https://img.shields.io/badge/Python-3.9-blue?style=for-the-badge&logo=python&logoColor=white">
+  <img src="https://img.shields.io/badge/Flask-000000?style=for-the-badge&logo=flask&logoColor=white">
+  <img src="https://img.shields.io/badge/Scikit--learn-FF9800?style=for-the-badge&logo=scikit-learn&logoColor=white">
+  <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white">
+  <img src="https://img.shields.io/badge/Joblib-0095D9?style=for-the-badge&logo=python&logoColor=white">
+  <img src="https://img.shields.io/badge/TensorFlow-FF6F00?style=for-the-badge&logo=tensorflow&logoColor=white">
+</div>
+
+<p>Este projeto utiliza as seguintes tecnologias:</p>
+<ul>
+  <li><strong>Java 17</strong>: Linguagem de programação utilizada para desenvolver o backend.</li>
+  <li><strong>Spring Boot</strong>: Framework Java utilizado para desenvolver a API do sistema.</li>
+  <li><strong>Python 3.9</strong>: Linguagem de programação usada no microserviço de Data Science.</li>
+  <li><strong>Flask</strong>: Framework Python para construir a API que hospeda o modelo de Machine Learning.</li>
+  <li><strong>Scikit-learn</strong>: Biblioteca Python para machine learning, utilizada para treinar o modelo de sentimento.</li>
+  <li><strong>Docker</strong>: Plataforma para automatizar a implantação de aplicações em containers, facilitando o desenvolvimento e a execução do projeto em diferentes ambientes.</li>
+  <li><strong>Joblib</strong>: Biblioteca Python para serialização do modelo treinado, permitindo seu carregamento eficiente no ambiente de produção.</li>
+  <li><strong>TensorFlow</strong>: Embora o modelo atual utilize o Scikit-learn, o TensorFlow pode ser utilizado para treinamento mais avançado, como redes neurais.</li>
+</ul>
+
+## 📊 Estado do Projeto
+
+![Progresso](https://img.shields.io/badge/Progresso-40%25-red?style=for-the-badge&labelColor=000000&color=FF0000&logo=github)
+
 ## 🏗️ Arquitetura Técnica
 
-O projeto utiliza uma arquitetura de **Microserviços** containerizada:
+### Explicação do Diagrama Mermaid:
 
-1.  **Back-End (Java Spring Boot):** Atua como API Gateway. Recebe a requisição do cliente, valida os dados, sanitiza a entrada e orquestra a chamada ao serviço de IA.
-2.  **Data Science Service (Python Flask):** Um microserviço leve que carrega o modelo treinado (Scikit-Learn) na memória e realiza a inferência estatística.
+- **Usuário Envia Texto**: O usuário envia um texto para a API.
+- **API Spring Boot**: A API recebe a requisição via **POST** e a envia para o microserviço Python.
+- **Microserviço Python**: O microserviço Python realiza a análise de sentimento e retorna a previsão.
+- **Resposta da API**: A previsão de sentimento é retornada ao usuário via API.
+- **Opções de Ações**: O usuário pode optar por atualizar ou excluir a previsão de sentimento.
 
-**Fluxo de Dados:**
-`Cliente (JSON)` ➡️ `Spring Boot (Validação)` ➡️ `Python (Predição)` ➡️ `Spring Boot (Formatação)` ➡️ `Cliente`
-
------
-
-## 🛠️ Tecnologias Utilizadas
-
-### Back-End
-
-  * **Java 17** & **Spring Boot 3**
-  * **Spring Web** (REST API)
-  * **RestTemplate** (Comunicação HTTP entre serviços)
+ ```mermaid
+graph LR
+    A[Usuário Envia Texto] --> B{API Spring Boot}
+    B --> C[Requisição POST para Python]
+    C --> D[Microserviço Python]
+    D --> E[Retorno da Previsão de Sentimento]
+    E --> F[Resposta da API com Previsão]
+    F --> G[Usuário Recebe Previsão]
+    G --> H{Usuário Opções}
+    H -->|Atualizar| I[PUT Atualiza Sentimento]
+    H -->|Excluir| J[DELETE Exclui Sentimento]
+```
 
 ### Data Science
 
