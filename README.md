@@ -25,6 +25,10 @@ Empresas recebem milhares de comentários diariamente e não conseguem ler todos
   <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white">
   <img src="https://img.shields.io/badge/Joblib-0095D9?style=for-the-badge&logo=python&logoColor=white">
   <img src="https://img.shields.io/badge/TensorFlow-FF6F00?style=for-the-badge&logo=tensorflow&logoColor=white">
+  <img src="https://img.shields.io/badge/H2-2.1.214-blue?style=for-the-badge&logo=h2&logoColor=white">
+  <img src="https://img.shields.io/badge/PostgreSQL-42.5.6-blue?style=for-the-badge&logo=postgresql&logoColor=white">
+  <img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white">
+  <img src="https://img.shields.io/badge/Postman-FF6C37?style=for-the-badge&logo=postman&logoColor=white">
 </div>
 
 <p>Este projeto utiliza as seguintes tecnologias:</p>
@@ -37,7 +41,12 @@ Empresas recebem milhares de comentários diariamente e não conseguem ler todos
   <li><strong>Docker</strong>: Plataforma para automatizar a implantação de aplicações em containers, facilitando o desenvolvimento e a execução do projeto em diferentes ambientes.</li>
   <li><strong>Joblib</strong>: Biblioteca Python para serialização do modelo treinado, permitindo seu carregamento eficiente no ambiente de produção.</li>
   <li><strong>TensorFlow</strong>: Embora o modelo atual utilize o Scikit-learn, o TensorFlow pode ser utilizado para treinamento mais avançado, como redes neurais.</li>
+  <li><strong>H2</strong>: Banco de dados em memória utilizado para testes e desenvolvimento.</li>
+  <li><strong>PostgreSQL</strong>: Sistema de gerenciamento de banco de dados relacional utilizado em produção.</li>
+  <li><strong>GitHub</strong>: Plataforma de hospedagem de código, utilizada para versionamento do projeto e colaboração entre os desenvolvedores.</li>
+  <li><strong>Postman</strong>: Ferramenta usada para testar as APIs de forma rápida e eficaz, permitindo simular requisições HTTP e visualizar as respostas.</li>
 </ul>
+
 
 ## 📊 Estado do Projeto
 
