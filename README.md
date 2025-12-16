@@ -104,7 +104,7 @@ docker-compose up --build
 
 Aguarde até ver as mensagens de log indicando que ambos os serviços iniciaram.
 
-  * **API Principal:** `http://localhost:8080`
+  * **API Principal:** `http://localhost:8081`
   * **Serviço de IA (Interno):** `http://localhost:5000`
 
 ### Opção 2: Rodando Manualmente
