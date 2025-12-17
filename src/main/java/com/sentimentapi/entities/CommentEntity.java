@@ -19,10 +19,12 @@ public class CommentEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Lob
+    @Column(columnDefinition = "TEXT")
     private String text;
 
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "sentiment_prediction_id")
     private SentimentPrediction previsao;
 

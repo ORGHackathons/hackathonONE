@@ -2,11 +2,15 @@
 package com.sentimentapi.controllers;
 
 // Importação de classes necessárias para a criação de endpoints HTTP e manipulação de dados
+import com.sentimentapi.entities.CommentEntity;
 import com.sentimentapi.entities.SentimentPrediction;
 import com.sentimentapi.services.SentimentService;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Map;
 
 // A anotação @RestController indica que essa classe vai gerenciar requisições HTTP e retornar respostas diretamente
@@ -38,7 +42,7 @@ public class SentimentController {
         }
 
         // Se o texto for válido, chamamos o serviço SentimentService para prever o sentimento do texto
-        SentimentPrediction prediction = sentimentService.predictSentiment(text);
+        SentimentPrediction prediction = sentimentService.createComment(text);
 
         // Aqui, retornamos uma resposta HTTP 200 (sucesso) com a previsão de sentimento e a probabilidade
         return ResponseEntity.ok(Map.of(
@@ -47,43 +51,49 @@ public class SentimentController {
         ));
     }
 
+    @PostMapping(value = "/sentiment/lote", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public List<SentimentPrediction> uploadCsv(@RequestParam("file")MultipartFile file) {
+            return sentimentService.processoUploadCsv(file);
+    }
+
     // Novo método GET para buscar informações de previsão de sentimento com base em um "id"
     @GetMapping("/sentiment/{id}")
-    public ResponseEntity<Map<String, Object>> getSentimentById(@PathVariable String id) {
+    public ResponseEntity<Map<String, Object>> getSentimentById(@PathVariable Long id) {
         // Aqui você pode buscar a previsão de sentimento com base em um ID (no caso, um valor fictício)
         // Para fins de exemplo, vamos simular que encontramos a previsão com esse ID.
-        SentimentPrediction prediction = sentimentService.getPredictionById(id);
+        CommentEntity comment = sentimentService.getPredictionById(id);
 
         // Se não encontrar a previsão, retornamos um erro 404 (não encontrado)
-        if (prediction == null) {
+        if (comment == null) {
             return ResponseEntity.status(404).body(Map.of("error", "Previsão não encontrada"));
         }
 
         // Caso contrário, retornamos a previsão encontrada
         return ResponseEntity.ok(Map.of(
-                "previsao", prediction.getLabel(),
-                "probabilidade", prediction.getProbability()
+                "id", comment.getId(),
+                "text", comment.getText(),
+                "previsao", comment.getPrevisao()
         ));
     }
 
-    @GetMapping()
-    public ResponseEntity<Map<String, Object>> stats(@PathVariable String id) {
-
-        SentimentPrediction prediction = sentimentService.getPredictionById(id);
-
-        if (prediction == null) {
-            return ResponseEntity.status(404).body(Map.of("error", "Previsão não encontrada"));
-        }
-
-        return ResponseEntity.ok(Map.of(
-                "previsao", prediction.getLabel(),
-                "probabilidade", prediction.getProbability()
-        ));
-    }
+//    @GetMapping()
+//    public ResponseEntity<Map<String, Object>> stats(@PathVariable Long id) {
+//
+//        SentimentPrediction prediction = sentimentService.getPredictionById(id);
+//
+//        if (prediction == null) {
+//            return ResponseEntity.status(404).body(Map.of("error", "Previsão não encontrada"));
+//        }
+//
+//        return ResponseEntity.ok(Map.of(
+//                "previsao", prediction.getLabel(),
+//                "probabilidade", prediction.getProbability()
+//        ));
+//    }
 
     // Novo método PUT para atualizar uma previsão de sentimento
     @PutMapping("/sentiment/{id}")
-    public ResponseEntity<Map<String, Object>> updateSentiment(@PathVariable String id, @RequestBody Map<String, String> request) {
+    public ResponseEntity<Map<String, Object>> updateSentiment(@PathVariable Long id, @RequestBody Map<String, String> request) {
         // Recebe o novo texto e ID para atualizar a previsão
         String newText = request.get("text");
 
@@ -93,30 +103,26 @@ public class SentimentController {
         }
 
         // Atualiza a previsão chamando um método do SentimentService
-        SentimentPrediction updatedPrediction = sentimentService.updatePrediction(id, newText);
+        CommentEntity updatedcomentario = sentimentService.updatePrediction(id, newText);
 
         // Se não encontrar o ID ou algo der errado, retorna um erro 404
-        if (updatedPrediction == null) {
+        if (updatedcomentario == null) {
             return ResponseEntity.status(404).body(Map.of("error", "Previsão não encontrada para atualizar"));
         }
 
         // Retorna a previsão atualizada
         return ResponseEntity.ok(Map.of(
-                "previsao", updatedPrediction.getLabel(),
-                "probabilidade", updatedPrediction.getProbability()
+                "id", updatedcomentario.getId(),
+                "text", updatedcomentario.getText(),
+                "previsao", updatedcomentario.getPrevisao()
         ));
     }
 
     // Novo método DELETE para excluir uma previsão de sentimento
     @DeleteMapping("/sentiment/{id}")
-    public ResponseEntity<Map<String, Object>> deleteSentiment(@PathVariable String id) {
+    public ResponseEntity<Map<String, Object>> deleteSentiment(@PathVariable Long id) {
         // Chama o método do SentimentService para tentar excluir a previsão com o ID fornecido
-        boolean isDeleted = sentimentService.deletePrediction(id);
-
-        // Se a previsão não for encontrada ou não puder ser excluída, retorna um erro 404
-        if (!isDeleted) {
-            return ResponseEntity.status(404).body(Map.of("error", "Previsão não encontrada para excluir"));
-        }
+             sentimentService.deletePrediction(id);
 
         // Retorna uma resposta 200 (sucesso) indicando que a previsão foi excluída
         return ResponseEntity.ok(Map.of("message", "Previsão excluída com sucesso"));
