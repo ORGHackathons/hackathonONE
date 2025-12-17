@@ -611,10 +611,6 @@ Para apresentar isso no Hackathon, siga esta ordem exata:
 }
 ```
 
-### Dicas para a Apresentação (O "Pulo do Gato")
 
-1.  **Explicabilidade:** Se perguntarem por que escolheu essa arquitetura, diga: *"O desacoplamento permite que o time de Data Science evolua o modelo (mude de Regressão Logística para Rede Neural, por exemplo) sem que o time de Back-End precise alterar uma linha de código Java, apenas mantendo o contrato da API."*
-2.  **Tratamento de Erros:** Note que no Java eu coloquei um `try-catch`. Se o Python cair, o Java não "explode", ele avisa que o serviço de IA está indisponível. Isso conta pontos.
-"probabilidade":0.9
 
 }
