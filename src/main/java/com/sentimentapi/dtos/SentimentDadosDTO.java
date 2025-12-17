@@ -1,8 +1,11 @@
 package com.sentimentapi.dtos;
 
-import lombok.Data;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class SentimentDadosDTO {
 
 
