@@ -2,6 +2,7 @@
 package com.sentimentapi.controllers;
 
 // Importação de classes necessárias para a criação de endpoints HTTP e manipulação de dados
+import com.sentimentapi.dtos.StatsDto;
 import com.sentimentapi.entities.CommentEntity;
 import com.sentimentapi.entities.SentimentPrediction;
 import com.sentimentapi.services.SentimentService;
@@ -76,20 +77,27 @@ public class SentimentController {
         ));
     }
 
-//    @GetMapping()
-//    public ResponseEntity<Map<String, Object>> stats(@PathVariable Long id) {
-//
-//        SentimentPrediction prediction = sentimentService.getPredictionById(id);
-//
-//        if (prediction == null) {
-//            return ResponseEntity.status(404).body(Map.of("error", "Previsão não encontrada"));
-//        }
-//
-//        return ResponseEntity.ok(Map.of(
-//                "previsao", prediction.getLabel(),
-//                "probabilidade", prediction.getProbability()
-//        ));
-//    }
+    // Endpoint GET que retorna estatísticas de sentimento
+    // com base nos últimos N registros informados na URL
+    @GetMapping("/sentiment/stats/{quantidade}")
+    public ResponseEntity<Map<String, Object>> stats(@PathVariable int quantidade) {
+
+        // Valida se a quantidade é maior que zero
+        if (quantidade <= 0) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("error", "A quantidade deve ser maior que zero"));
+        }
+
+        // Chama o service para calcular as estatísticas
+        StatsDto stats = sentimentService.getStats(quantidade);
+
+        // Retorna os percentuais de sentimentos positivos e negativos
+        return ResponseEntity.ok(Map.of(
+                "positivo", stats.positivo(),
+                "negativo", stats.negativo()
+        ));
+    }
+
 
     // Novo método PUT para atualizar uma previsão de sentimento
     @PutMapping("/sentiment/{id}")
