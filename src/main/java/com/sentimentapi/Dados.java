@@ -22,7 +22,9 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.List;
 
-
+// Componente executado na inicialização da aplicação (perfil dev)
+// Responsável por carregar dados iniciais a partir de arquivos
+// JSON ou CSV e popular o banco de dados para testes
 @Component
 @RequiredArgsConstructor
 @Profile("dev")
@@ -35,31 +37,34 @@ public class Dados implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
+        // Evita duplicar dados se o banco já estiver populado
         if (commentRepository.count() > 0) return;
 
+        // Carrega dados do arquivo JSON, se existir
         if (new ClassPathResource("data.json").exists()) {
-                DadosJson();
+            DadosJson();
+        }
 
-            }
-
+        // Carrega dados do arquivo CSV, se existir
         if (new ClassPathResource("data.csv").exists()) {
             DadosCsv();
         }
     }
 
+    // Lê dados de um arquivo JSON e salva no banco
     private void DadosJson() throws IOException {
 
         InputStream inputStream = new ClassPathResource("data.json").getInputStream();
 
         List<SentimentDadosDTO> dados =
-                objectMapper.readValue(inputStream, new TypeReference<>() {
-                });
+                objectMapper.readValue(inputStream, new TypeReference<>() {});
 
         for (SentimentDadosDTO dto : dados) {
             salvar(dto);
         }
     }
 
+    // Lê dados de um arquivo CSV e salva no banco
     private void DadosCsv() throws IOException {
 
         Reader reader = new InputStreamReader(
@@ -78,16 +83,15 @@ public class Dados implements CommandLineRunner {
             );
             salvar(dto);
         }
-
-
     }
 
+    // Salva a previsão e o comentário associados no banco
     private void salvar(SentimentDadosDTO dto) {
+
         SentimentPrediction prediction = new SentimentPrediction(
                 dto.getPrevisao(),
                 dto.getProbabilidade()
         );
-
         predictionRepository.save(prediction);
 
         CommentEntity comment = new CommentEntity();
@@ -97,8 +101,6 @@ public class Dados implements CommandLineRunner {
         commentRepository.save(comment);
     }
 }
-
-
 
 
 
