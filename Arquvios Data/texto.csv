@@ -1,0 +1,51 @@
+text;previsao;probabilidade
+"O produto chegou antes do prazo e a qualidade é impecável!";Positivo;0.98
+"Não gostei do material, parece muito frágil pelo preço.";Negativo;0.87
+"Atendimento excelente, resolveram meu problema em minutos.";Positivo;0.95
+"O site é confuso e o frete saiu mais caro que o produto.";Negativo;0.92
+"Amei a cor e o design, recomendo com certeza!";Positivo;0.99
+"Infelizmente o tamanho não corresponde à tabela de medidas.";Negativo;0.82
+"Melhor compra que fiz este ano, nota dez!";Positivo;0.97
+"O suporte técnico não responde minhas dúvidas.";Negativo;0.89
+"Entrega rápida e produto muito bem embalado.";Positivo;0.94
+"A experiência de compra foi péssima, não volto mais.";Negativo;0.96
+"O manual de instruções é impossível de entender.";Negativo;0.85
+"Chegou tudo certo, exatamente conforme o anúncio.";Positivo;0.91
+"O tecido é incrivelmente macio e confortável.";Positivo;0.88
+"Veio faltando uma peça essencial no pacote.";Negativo;0.93
+"Superou todas as minhas expectativas, fantástico.";Positivo;0.99
+"O aplicativo trava toda hora, impossível de navegar.";Negativo;0.97
+"Preço justo e entrega muito rápida.";Positivo;0.85
+"A cor entregue é totalmente diferente da foto.";Negativo;0.88
+"Instalação fácil e intuitiva, adorei o sistema!";Positivo;0.92
+"O som é muito baixo e de péssima qualidade.";Negativo;0.84
+"Sempre compro nesta loja e o serviço é nota dez.";Positivo;0.96
+"O material começou a descascar em poucos dias.";Negativo;0.95
+"Parabéns pelo capricho no envio e na embalagem!";Positivo;0.98
+"O atendimento via chat é extremamente demorado.";Negativo;0.81
+"Simplesmente perfeito, não tenho do que reclamar.";Positivo;1.0
+"O conector parou de funcionar na primeira semana.";Negativo;0.91
+"Vendedor muito atencioso e resolveu todas as dúvidas.";Positivo;0.93
+"O acabamento é grosseiro e deixa a desejar.";Negativo;0.86
+"Vale cada centavo, compraria novamente hoje mesmo.";Positivo;0.95
+"O tamanho G é extremamente pequeno, parece um P.";Negativo;0.89
+"Vou indicar para todos os meus amigos!";Positivo;0.97
+"O cheiro do produto é muito forte e desagradável.";Negativo;0.74
+"A tela tem uma resolução incrível e cores vivas.";Positivo;0.94
+"Demoraram mais de uma semana para postar o pedido.";Negativo;0.80
+"Amei o brinde surpresa que veio na caixa!";Positivo;0.98
+"O zíper quebrou logo no primeiro uso.";Negativo;0.94
+"Tudo perfeito, desde a navegação até a entrega.";Positivo;0.99
+"O cabo de energia veio com mau contato.";Negativo;0.88
+"Design moderno e material de alta resistência.";Positivo;0.91
+"Propaganda enganosa, o produto não faz o que promete.";Negativo;0.98
+"Melhor custo-benefício que encontrei no mercado.";Positivo;0.89
+"A bateria não dura nem duas horas de uso.";Negativo;0.92
+"O acabamento em aço escovado é lindíssimo.";Positivo;0.96
+"Péssimo pós-venda, ninguém resolve meu problema.";Negativo;0.97
+"Chegou muito bem protegido, sem nenhum arranhão.";Positivo;0.94
+"O motor faz um barulho muito alto e irritante.";Negativo;0.85
+"Super prático de usar no dia a dia, amei.";Positivo;0.90
+"O software é cheio de bugs e erros de tradução.";Negativo;0.83
+"A entrega foi recorde, chegou em dois dias!";Positivo;0.97
+"O plástico parece reciclado de baixa qualidade.";Negativo;0.78
