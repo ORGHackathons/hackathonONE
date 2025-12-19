@@ -437,40 +437,59 @@ print("Modelo salvo como 'sentiment_model.joblib'")
 Esta é a API que o Spring Boot vai chamar. Ela carrega o arquivo `.joblib` e responde a requisições. Vamos usar **Flask** por ser simples.
 
 ```python
-# app_python.py
 from flask import Flask, request, jsonify
 import joblib
 
 app = Flask(__name__)
 
-# Carrega o modelo ao iniciar a API
 try:
-    model = joblib.load('sentiment_model.joblib')
+    data = joblib.load('modelo_b2w_rating_sentimento.pkl')
+    model = data['model']
+    vectorizer = data['vectorizer']
     print("Modelo carregado com sucesso!")
-except:
-    print("Erro: Execute o script de treinamento primeiro.")
+
+except Exception as e:
+    print("Erro: Erro ao carregar o modelo.")
+    model = None
+    vectorizer = None
+
+LABEL_MAP = {
+    "negative": "Negativo",
+    "neutral": "Neutro",    
+    "positive": "Positivo"
+}
+
+
 
 @app.route('/predict', methods=['POST'])
 def predict():
-    dados = request.get_json()
-    texto = dados.get('text')
+    try:
+        dados = request.get_json()
+        texto = dados.get('text') if dados else None
 
-    if not texto:
-        return jsonify({"erro": "Texto não fornecido"}), 400
+        if not texto or len(texto.strip()) < 5:
+            return jsonify({"erro": "Texto não fornecido ou muito curto."}), 400
 
-    # Predição
-    prediction = model.predict([texto])[0]
-    # Probabilidade (pega a maior probabilidade entre as classes)
-    proba = max(model.predict_proba([texto])[0])
+        X = vectorizer.transform([texto])
 
-    return jsonify({
-        "previsao": prediction,
-        "probabilidade": float(round(proba, 2))
-    })
+        prediction_label = model.predict(X)[0]
+        proba = float(model.predict_proba(X).max())
+
+        return jsonify({
+            "previsao": LABEL_MAP.get(prediction_label, "Desconhecido"),
+            "probabilidade": round(proba, 2)
+        })
+
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({"erro": str(e)}), 500
+
+
 
 if __name__ == '__main__':
-    # Roda na porta 5000
-    app.run(port=5000, debug=True)
+    app.run(host = "0.0.0.0", port=5000)
+
 ```
 
 -----
