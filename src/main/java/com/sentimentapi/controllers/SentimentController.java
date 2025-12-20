@@ -1,11 +1,10 @@
-// Pacote onde a aplicação está localizada
 package com.sentimentapi.controllers;
 
-// Importação de classes necessárias para a criação de endpoints HTTP e manipulação de dados
 import com.sentimentapi.dtos.StatsDto;
 import com.sentimentapi.entities.CommentEntity;
 import com.sentimentapi.entities.SentimentPrediction;
 import com.sentimentapi.services.SentimentService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,63 +12,79 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
-// A anotação @RestController indica que essa classe vai gerenciar requisições HTTP e retornar respostas diretamente
-// (sem necessidade de criar páginas HTML, como em aplicações tradicionais).
+// Controlador REST responsável por expor os endpoints
+// relacionados à análise de sentimento
 @RestController
 public class SentimentController {
 
-    // A classe precisa de uma instância do SentimentService, que é responsável por fazer o trabalho de análise de sentimento
+    // Camada de serviço onde está a lógica de negócio
     private final SentimentService sentimentService;
 
-    // O construtor abaixo recebe uma instância do SentimentService e a armazena na variável sentimentService
-    // Isso garante que a classe SentimentController possa acessar os métodos do SentimentService.
+    // Injeção de dependência via construtor
     public SentimentController(SentimentService sentimentService) {
         this.sentimentService = sentimentService;
     }
 
-    // A anotação @PostMapping define que esse método vai responder a requisições HTTP do tipo POST para o caminho "/sentiment"
+    // Cria um novo comentário e gera a previsão de sentimento
     @PostMapping("/sentiment")
-    // O método recebe um corpo da requisição (o texto que será analisado) e retorna uma resposta HTTP
-    // A resposta é um mapa (uma coleção de chave/valor) que será convertido automaticamente em JSON
-    public ResponseEntity<Map<String, Object>> getSentiment(@RequestBody Map<String, String> request) {
-        // Aqui, pegamos o texto enviado na requisição, que está mapeado pela chave "text"
+    public ResponseEntity<Map<String, Object>> getSentiment(
+            @RequestBody Map<String, String> request) {
+
+        // Extrai o texto enviado no corpo da requisição
         String text = request.get("text");
 
-        // Se o texto não for fornecido ou for muito curto (menos de 5 caracteres), retornamos um erro
+        // Validação defensiva:
+        // - evita texto nulo
+        // - evita textos muito curtos que prejudicam a previsão
         if (text == null || text.length() < 5) {
-            // ResponseEntity.badRequest() retorna uma resposta HTTP de erro (código 400) com uma mensagem de erro
-            return ResponseEntity.badRequest().body(Map.of("error", "Texto muito curto ou inválido"));
+            return ResponseEntity.badRequest()
+                    .body(Map.of("error", "Texto muito curto ou inválido"));
         }
 
-        // Se o texto for válido, chamamos o serviço SentimentService para prever o sentimento do texto
-        SentimentPrediction prediction = sentimentService.createComment(text);
+        // Cria o comentário, chama o microserviço Python
+        // e salva a previsão no banco de dados
+        SentimentPrediction prediction =
+                sentimentService.createComment(text);
 
-        // Aqui, retornamos uma resposta HTTP 200 (sucesso) com a previsão de sentimento e a probabilidade
+        // Retorna apenas os dados necessários ao cliente
         return ResponseEntity.ok(Map.of(
-                "previsao", prediction.getLabel(),  // O rótulo (label) é a previsão do sentimento (ex: "positivo" ou "negativo")
-                "probabilidade", prediction.getProbability()  // A probabilidade associada à previsão (ex: 0.85 significa 85% de chance)
+                "previsao", prediction.getLabel(),
+                "probabilidade", prediction.getProbability()
         ));
     }
 
-    @PostMapping(value = "/sentiment/lote", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public List<SentimentPrediction> uploadCsv(@RequestParam("file")MultipartFile file) {
-            return sentimentService.processoUploadCsv(file);
+    // Processa comentários em lote a partir de um arquivo CSV
+    @PostMapping(
+            value = "/sentiment/lote",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
+    public List<SentimentPrediction> uploadCsv(
+            @RequestParam("file") MultipartFile file) {
+
+        // Toda a lógica de leitura e processamento do CSV
+        // fica encapsulada no service
+        return sentimentService.processoUploadCsv(file);
     }
 
-    // Novo método GET para buscar informações de previsão de sentimento com base em um "id"
+    // Busca um comentário e sua previsão pelo ID
     @GetMapping("/sentiment/{id}")
-    public ResponseEntity<Map<String, Object>> getSentimentById(@PathVariable Long id) {
-        // Aqui você pode buscar a previsão de sentimento com base em um ID (no caso, um valor fictício)
-        // Para fins de exemplo, vamos simular que encontramos a previsão com esse ID.
-        CommentEntity comment = sentimentService.getPredictionById(id);
+    public ResponseEntity<Map<String, Object>> getSentimentById(
+            @PathVariable Long id) {
 
-        // Se não encontrar a previsão, retornamos um erro 404 (não encontrado)
+        // Busca o comentário no banco de dados
+        CommentEntity comment =
+                sentimentService.getPredictionById(id);
+
+        // Caso não exista comentário para o ID informado,
+        // retorna HTTP 404
         if (comment == null) {
-            return ResponseEntity.status(404).body(Map.of("error", "Previsão não encontrada"));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", "Previsão não encontrada"));
         }
 
-        // Caso contrário, retornamos a previsão encontrada
+        // Retorna os dados do comentário e sua previsão
         return ResponseEntity.ok(Map.of(
                 "id", comment.getId(),
                 "text", comment.getText(),
@@ -77,62 +92,85 @@ public class SentimentController {
         ));
     }
 
-    // Endpoint GET que retorna estatísticas de sentimento
-    // com base nos últimos N registros informados na URL
+    // Retorna estatísticas de sentimento (percentual)
+    // com base nos últimos N comentários
     @GetMapping("/sentiment/stats/{quantidade}")
-    public ResponseEntity<Map<String, Object>> stats(@PathVariable int quantidade) {
+    public ResponseEntity<Map<String, Object>> stats(
+            @PathVariable int quantidade) {
 
-        // Valida se a quantidade é maior que zero
+        // Evita chamadas inválidas que poderiam
+        // gerar divisão por zero no service
         if (quantidade <= 0) {
             return ResponseEntity.badRequest()
                     .body(Map.of("error", "A quantidade deve ser maior que zero"));
         }
 
-        // Chama o service para calcular as estatísticas
-        StatsDto stats = sentimentService.getStats(quantidade);
+        // Calcula os percentuais de sentimentos
+        StatsDto stats =
+                sentimentService.getStats(quantidade);
 
-        // Retorna os percentuais de sentimentos positivos e negativos
+        // Retorna os valores já calculados
         return ResponseEntity.ok(Map.of(
                 "positivo", stats.positivo(),
                 "negativo", stats.negativo()
         ));
     }
 
-
-    // Novo método PUT para atualizar uma previsão de sentimento
+    // Atualiza o texto de um comentário existente
+    // e recalcula sua previsão de sentimento
     @PutMapping("/sentiment/{id}")
-    public ResponseEntity<Map<String, Object>> updateSentiment(@PathVariable Long id, @RequestBody Map<String, String> request) {
-        // Recebe o novo texto e ID para atualizar a previsão
+    public ResponseEntity<Map<String, Object>> updateSentiment(
+            @PathVariable Long id,
+            @RequestBody Map<String, String> request) {
+
+        // Obtém o novo texto informado pelo usuário
         String newText = request.get("text");
 
-        // Verifica se o novo texto é válido
+        // Validação básica antes de processar
         if (newText == null || newText.length() < 5) {
-            return ResponseEntity.badRequest().body(Map.of("error", "Texto muito curto ou inválido"));
+            return ResponseEntity.badRequest()
+                    .body(Map.of("error", "Texto muito curto ou inválido"));
         }
 
-        // Atualiza a previsão chamando um método do SentimentService
-        CommentEntity updatedcomentario = sentimentService.updatePrediction(id, newText);
+        // Atualiza o comentário e a previsão no banco
+        Optional<CommentEntity> optionalComentario =
+                sentimentService.updatePrediction(id, newText);
 
-        // Se não encontrar o ID ou algo der errado, retorna um erro 404
-        if (updatedcomentario == null) {
-            return ResponseEntity.status(404).body(Map.of("error", "Previsão não encontrada para atualizar"));
+        // Caso o ID não exista, retorna 404
+        if (optionalComentario.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", "Previsão não encontrada para atualizar"));
         }
 
-        // Retorna a previsão atualizada
+        CommentEntity updatedComment =
+                optionalComentario.get();
+
+        // Retorna o comentário já atualizado
         return ResponseEntity.ok(Map.of(
-                "id", updatedcomentario.getId(),
-                "text", updatedcomentario.getText(),
-                "previsao", updatedcomentario.getPrevisao()
+                "id", updatedComment.getId(),
+                "text", updatedComment.getText(),
+                "previsao", updatedComment.getPrevisao()
         ));
     }
 
-    // Novo método DELETE para excluir uma previsão de sentimento
+    // Remove um comentário e sua previsão do banco
     @DeleteMapping("/sentiment/{id}")
-    public ResponseEntity<Map<String, Object>> deleteSentiment(@PathVariable Long id) {
-        // Chama o método do SentimentService para tentar excluir a previsão com o ID fornecido
-             sentimentService.deletePrediction(id);
+    public ResponseEntity<Map<String, Object>> deleteSentiment(
+            @PathVariable Long id) {
 
-        // Retorna uma resposta 200 (sucesso) indicando que a previsão foi excluída
-        return ResponseEntity.ok(Map.of("message", "Previsão excluída com sucesso"));
+        // Tenta remover o comentário pelo ID
+        Optional<CommentEntity> deleted =
+                sentimentService.deletePrediction(id);
+
+        // Se não existir, retorna 404
+        if (deleted.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("message", "Comentário não encontrado"));
+        }
+
+        // Confirma a exclusão com sucesso
+        return ResponseEntity.ok(
+                Map.of("message", "Previsão excluída com sucesso")
+        );
     }
 }
