@@ -1,0 +1,5 @@
+Versão do Pandas: 2.2.2
+Versão do Numpy: 2.0.2
+Versão do Joblib: 1.5.3
+Versão do Seaborn: 0.13.2
+Versão do Sklearn: 1.6.1
