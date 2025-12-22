@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: sentiment
+
+  profiles:
+    active: dev
+
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
+
+server:
+  port: 8081
+
+
