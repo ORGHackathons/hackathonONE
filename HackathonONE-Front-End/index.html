@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <title>HackathonONE</title>
+</head>
+<body>
+    <header class="start">
+        <div class="logo">
+             <img src="assets/img/HackaOnes_time.jpg" alt="Logo HackathonONE">
+            <h1>HackathonONE</h1>
+        </div>
+    </header>
+    <main>
+        <section class="acao">
+            <h2 id="palavra"></h2>
+            <span class="cursor">|</span>
+        </section>
+        <section class="input-comentario">
+            <h2>Digite um comentario ou suba um arquivo em lote .csv</h2>
+            <div   class="comentario">
+                <button id="btn-comentario">Comentario</button> 
+                <div id="box-comentario" style="display: none;">
+                    <textarea id="texto-comentario" rows="4" cols="50" placeholder="Digite seu comentario aqui..."></textarea>
+                    <button id="enviar-comentario">Enviar</button>
+                </div>
+                <button id="btn-arquivo">Escolher arquivo</button>
+                <input type="file" id="arquivo-csv" accept=".csv" style="display: none;">
+            </div>
+        </section>
+        <section class="busca">
+            <h2>Porcentagem de positivo e negativo dos ultimos </h2>
+            <div class="comentario">
+            
+                <button class="btn-stats" data-qtd="10">10 comentarios</button>
+                <button class="btn-stats" data-qtd="50">50 comentarios</button> 
+                <button class="btn-stats" data-qtd="100">100 comentarios</button>
+                
+                <input type="number" id="stats-custom" placeholder="Outra quantidade">
+                <button id="btn-stats-custom">Buscar</button>
+                
+                <div id="resultado-stats"></div>
+            </div>
+        </section>
+        <section class="funcoes">
+            <div class="entrar">
+                <div class="fazer">
+                    <h3>Buscar comentario</h3>
+                    <label  for="buscar-id">Numero:</label>
+                    <input type="number" id="buscar-id"/>
+                    <button id="btn-buscar">Buscar</button>
+                    <div id="resultado-busca"></div>
+                </div>
+
+                <div class="fazer">
+                    <h3>Deletar comentario</h3>
+                    <label for="deletar-id">Numero:</label>
+                    <input type="number" id="deletar-id" />
+                    <button id="btn-deletar">Deletar</button>
+                </div>
+
+                <div class="fazer">
+                    <h3>Modificar comentario</h3>
+                    <label for="atualizar-id">Numero:</label>
+                    <input type="number" id="atualizar-id" />
+
+                    <textarea id="atualizar-texto"
+                            placeholder="Digite o novo comentário"></textarea>
+
+                    <button id="btn-atualizar">Atualizar</button>
+                </div>
+
+            </div>
+        </section>
+    </main> 
+
+    <footer>
+        
+    </footer>
+<script type="module" src="assets/js/main.js"></script>
+<script src="assets/js/script.js"></script>
+</body>
+</html>
