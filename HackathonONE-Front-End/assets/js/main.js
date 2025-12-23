@@ -10,11 +10,16 @@ document.getElementById("btn-comentario").onclick = () => {
     document.getElementById("box-comentario").style.display = "block";
 };
 
+
 // Criar comentário
 document.getElementById("enviar-comentario").onclick = async () => {
     const text = document.getElementById("texto-comentario").value;
     const data = await criarComentario(text);
-    alert(`Previsão: ${data.previsao}`);
+
+    document.getElementById("resultado-comentario").innerHTML = `
+        <strong>Previsão:</strong> ${data.previsao}<br>
+        <strong>Probabilidade:</strong> ${(data.probabilidade * 100).toFixed(2)}%
+    `;
 };
 
 // Abrir seletor de arquivo
@@ -71,11 +76,36 @@ document.getElementById("btn-stats-custom").addEventListener("click", async () =
 // Buscar comentário
 document.getElementById("btn-buscar").onclick = async () => {
     const id = document.getElementById("buscar-id").value;
+
+    if (!id) {
+        alert("Informe um ID válido");
+        return;
+    }
+
     const data = await buscarComentario(id);
 
-    document.getElementById("resultado-busca").innerText =
-        `${data.text} (${data.previsao})`;
+   document.getElementById("resultado-busca").innerHTML = `
+    <div class="resultado-busca-container">
+        <div class="resultado-linha">
+            <span class="resultado-label">Comentário</span>
+            <p class="resultado-texto">${data.text}</p>
+        </div>
+
+        <div class="resultado-linha">
+            <span class="resultado-label">Previsão</span>
+            <span class="resultado-badge ${data.previsao.toLowerCase()}">
+                ${data.previsao}
+            </span>
+        </div>
+
+        <div class="resultado-linha">
+            <span class="resultado-label">Probabilidade</span>
+            <strong>${(data.probabilidade * 100).toFixed(2)}%</strong>
+        </div>
+    </div>
+`;
 };
+
 
 // Deletar comentário
 document.getElementById("btn-deletar").onclick = async () => {
@@ -90,5 +120,25 @@ document.getElementById("btn-atualizar").onclick = async () => {
     const text = document.getElementById("atualizar-texto").value;
 
     const data = await atualizarComentario(id, text);
-    alert(`Atualizado: ${data.previsao}`);
+
+    document.getElementById("resultado-atualizacao").innerHTML = `
+        <div class="resultado-busca-container">
+            <div class="resultado-linha">
+                <span class="resultado-label">Comentário Atualizado</span>
+                <p class="resultado-texto">${data.text}</p>
+            </div>
+
+            <div class="resultado-linha">
+                <span class="resultado-label">Previsão</span>
+                <span class="resultado-badge ${data.previsao.toLowerCase()}">
+                    ${data.previsao}
+                </span>
+            </div>
+
+            <div class="resultado-linha">
+                <span class="resultado-label">Probabilidade</span>
+                <strong>${(data.probabilidade * 100).toFixed(2)}%</strong>
+            </div>
+        </div>
+    `;
 };
