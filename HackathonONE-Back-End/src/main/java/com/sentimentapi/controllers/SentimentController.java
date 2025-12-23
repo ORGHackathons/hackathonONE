@@ -88,7 +88,8 @@ public class SentimentController {
         return ResponseEntity.ok(Map.of(
                 "id", comment.getId(),
                 "text", comment.getText(),
-                "previsao", comment.getPrevisao()
+                "previsao", comment.getPrevisao().getLabel(),
+                "probabilidade", comment.getPrevisao().getProbability()
         ));
     }
 
@@ -149,7 +150,9 @@ public class SentimentController {
         return ResponseEntity.ok(Map.of(
                 "id", updatedComment.getId(),
                 "text", updatedComment.getText(),
-                "previsao", updatedComment.getPrevisao()
+                "previsao", updatedComment.getPrevisao().getLabel(),
+                "probabilidade", updatedComment.getPrevisao().getProbability()
+
         ));
     }
 
