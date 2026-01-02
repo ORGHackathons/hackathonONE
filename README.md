@@ -35,7 +35,7 @@ Focado em **Atendimento ao Cliente, Marketing e Operações** que buscam entende
 
 <p>Este projeto utiliza as seguintes tecnologias:</p>
 <ul>
-  <li><strong>Java 17</strong>: Linguagem de programação utilizada para desenvolver o backend.</li>
+  <li><strong>Java 21</strong>: Linguagem de programação utilizada para desenvolver o backend.</li>
   <li><strong>Spring Boot</strong>: Framework Java utilizado para desenvolver a API do sistema.</li>
   <li><strong>Python 3.9</strong>: Linguagem de programação usada no microserviço de Data Science.</li>
   <li><strong>Flask</strong>: Framework Python para construir a API que hospeda o modelo de Machine Learning.</li>
