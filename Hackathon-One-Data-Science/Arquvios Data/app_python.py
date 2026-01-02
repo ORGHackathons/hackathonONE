@@ -1,3 +1,4 @@
+<<<<<<< HEAD:Dados/Arquvios Data/plus/app_python.py
 # -*- coding: utf-8 -*-
 """peso_gabriel.ipynb
 
@@ -14,31 +15,68 @@ import numpy as np  # Necessário para manipular os arrays de índices
 app = Flask(__name__)
 
 # --- Carregamento do Modelo ---
+=======
+from flask import Flask, request, jsonify  # Importa o Flask, request e jsonify
+from flask_cors import CORS  # Importa o CORS
+import joblib  # Importa o joblib
+
+# Cria a instância do aplicativo Flask
+app = Flask(__name__)
+
+# --- CORREÇÃO AQUI ---
+# Habilita CORS para todas as rotas, permitindo que o Front-End (Java/JS) acesse esta API
+CORS(app)
+# ---------------------
+
+# Tenta carregar o modelo treinado e o vetorizar
+>>>>>>> 886d334 (refactor: reestruturação de pastas, integração IA e dashboard):Hackathon-One-Data-Science/Arquvios Data/app_python.py
 try:
     data = joblib.load('modelo_b2w_rating_sentimento.pkl')
     model = data['model']
     vectorizer = data['vectorizer']
     print("Modelo carregado com sucesso!")
+<<<<<<< HEAD:Dados/Arquvios Data/plus/app_python.py
 except Exception as e:
     print(f"Erro crítico: {e}")
     model = None
     vectorizer = None
 
+=======
+
+except Exception as e:
+    print(f"Erro: Erro ao carregar o modelo: {e}")
+    model = None
+    vectorizer = None
+
+# Dicionário para mapear as classes de sentimento
+>>>>>>> 886d334 (refactor: reestruturação de pastas, integração IA e dashboard):Hackathon-One-Data-Science/Arquvios Data/app_python.py
 LABEL_MAP = {
     "negative": "Negativo",
     "neutral": "Neutro",
     "positive": "Positivo"
 }
 
+<<<<<<< HEAD:Dados/Arquvios Data/plus/app_python.py
 @app.route('/predict', methods=['POST'])
 def predict():
     try:
+=======
+# Define a rota para a previsão de sentimentos
+@app.route('/predict', methods=['POST'])
+def predict():
+    try:
+        # Verifica se o modelo foi carregado antes de tentar usar
+        if model is None or vectorizer is None:
+             return jsonify({"erro": "Modelo de IA não está disponível."}), 503
+
+>>>>>>> 886d334 (refactor: reestruturação de pastas, integração IA e dashboard):Hackathon-One-Data-Science/Arquvios Data/app_python.py
         dados = request.get_json()
         texto = dados.get('text') if dados else None
 
         if not texto or len(texto.strip()) < 5:
             return jsonify({"erro": "Texto não fornecido ou muito curto."}), 400
 
+<<<<<<< HEAD:Dados/Arquvios Data/plus/app_python.py
         # 1. Transformar o texto
         X = vectorizer.transform([texto])
 
@@ -91,6 +129,16 @@ def predict():
             "previsao": LABEL_MAP.get(prediction_label, "Desconhecido"),
             "probabilidade": round(proba, 2),
             "analise_pesos": palavras_relevantes  # <--- Nova chave no retorno JSON
+=======
+        # Transforma e prevê
+        X = vectorizer.transform([texto])
+        prediction_label = model.predict(X)[0]
+        proba = float(model.predict_proba(X).max())
+
+        return jsonify({
+            "previsao": LABEL_MAP.get(prediction_label, "Desconhecido"),
+            "probabilidade": round(proba, 2)
+>>>>>>> 886d334 (refactor: reestruturação de pastas, integração IA e dashboard):Hackathon-One-Data-Science/Arquvios Data/app_python.py
         })
 
     except Exception as e:

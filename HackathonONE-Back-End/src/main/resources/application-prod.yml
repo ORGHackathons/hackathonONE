@@ -2,12 +2,17 @@
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/sentiment
+    url: ${DB_URL}
     username: ${DB_USER}
     password: ${DB_PASSWORD}
-
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
     show-sql: false
+    # ADICIONE ESTA LINHA ABAIXO:
+    properties:
+      hibernate:
+        jdbc:
+          lob:
+            non_contextual_creation: true

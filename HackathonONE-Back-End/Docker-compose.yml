@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+
+  # Serviço Python (microserviço de IA)
+  sentimento-ia-python:
+    container_name: sentimento-ia-python
+    build:
+      context: ../Hackathon-One-Data-Science/Arquvios Data
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    restart: unless-stopped
+    networks:
+      - sentiment-net
+
+  # Serviço Java (API principal com Spring Boot)
+  sentimento-api-java:
+    container_name: sentimento-api-java
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      sentimento-ia-python:
+        condition: service_started
+      db:
+        condition: service_healthy # Garante que a API só suba quando o banco estiver pronto
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SENTIMENT_PYTHON_URL: http://sentimento-ia-python:5000/predict
+      # Configurações alinhadas com sua necessidade:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/sentiment
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: Samuel78@16
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      # Correção para o erro de Large Objects (LOB) que vimos antes:
+      SPRING_JPA_PROPERTIES_HIBERNATE_JDBC_LOB_NON_CONTEXTUAL_CREATION: "true"
+    restart: unless-stopped
+    networks:
+      - sentiment-net
+
+  # Banco de Dados PostgreSQL
+  db:
+    image: postgres:15
+    container_name: postgres-sentiment
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: sentiment
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Samuel78@16
+    ports:
+      - "5432:5432"
+    healthcheck: # Adicionado para avisar à API quando o banco aceitar conexões
+      test: ["CMD-SHELL", "pg_isready -U postgres -d sentiment"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - sentiment-net
+
+volumes:
+  postgres_data:
+
+networks:
+  sentiment-net:
+    driver: bridge

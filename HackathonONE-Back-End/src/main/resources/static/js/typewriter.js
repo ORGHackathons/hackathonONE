@@ -2,7 +2,7 @@ export function iniciarTypewriter() {
   const textElement = document.getElementById("palavra");
   if (!textElement) return;
 
-  const words = ["HackathonONE", "HackaOnes", "Alura Latam", "Oracle", "2025"];
+  const words = ["HackathonONE", "HackaOnes", "Alura Latam", "Oracle", "2026"];
   let wordIndex = 0;
   let charIndex = 0;
   let isDeleting = false;

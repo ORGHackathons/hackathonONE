@@ -27,7 +27,7 @@ import java.util.List;
 // JSON ou CSV e popular o banco de dados para testes
 @Component
 @RequiredArgsConstructor
-@Profile("dev")
+@Profile({"dev", "prod"})
 public class Dados implements CommandLineRunner {
 
     private final CommentRepository commentRepository;

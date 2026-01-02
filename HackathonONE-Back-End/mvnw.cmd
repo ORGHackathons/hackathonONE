@@ -1,3 +1,6 @@
+@echo off
+REM Minimal mvnw wrapper delegating to system Maven installation
+"C:\ProgramData\chocolatey\lib\maven\apache-maven-3.9.9\bin\mvn.cmd" %*
 <# : batch portion
 @REM ----------------------------------------------------------------------------
 @REM Licensed to the Apache Software Foundation (ASF) under one

@@ -1,6 +1,5 @@
 package com.sentimentapi.entities;
 
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,14 +25,20 @@ public class CommentEntity {
 
     // Texto do comentário enviado para análise
     @Lob
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String text;
 
-    // Relacionamento com a previsão de sentimento gerada
-    @ManyToOne
-    @JoinColumn(name = "sentiment_prediction_id")
+    // Relacionamento obrigatório com a previsão de sentimento
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "sentiment_prediction_id", nullable = false)
     private SentimentPrediction previsao;
 
-    // Data e hora em que o comentário foi salvo
+    // Data e hora em que o comentário foi salvo no banco
     private LocalDateTime dataCriacao;
+
+    // Método executado automaticamente antes do insert
+    @PrePersist
+    public void prePersist() {
+        this.dataCriacao = LocalDateTime.now();
+    }
 }
