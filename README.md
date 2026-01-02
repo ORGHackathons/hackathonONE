@@ -109,9 +109,9 @@ Antes de subir os containers, é necessário gerar o arquivo binário do modelo 
 
 Na raiz do projeto (onde está o `docker-compose.yml`):
 
-bash
+ ```bash
 docker-compose up --build
-
+```
 
 Aguarde até ver as mensagens de log indicando que ambos os serviços iniciaram.
 
