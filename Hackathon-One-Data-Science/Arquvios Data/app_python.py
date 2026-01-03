@@ -1,4 +1,3 @@
-<<<<<<< HEAD:Dados/Arquvios Data/plus/app_python.py
 # -*- coding: utf-8 -*-
 """peso_gabriel.ipynb
 
@@ -9,142 +8,69 @@ Original file is located at
 """
 
 from flask import Flask, request, jsonify
-import joblib
-import numpy as np  # Necessário para manipular os arrays de índices
-
-app = Flask(__name__)
-
-# --- Carregamento do Modelo ---
-=======
-from flask import Flask, request, jsonify  # Importa o Flask, request e jsonify
 from flask_cors import CORS  # Importa o CORS
 import joblib  # Importa o joblib
+import numpy as np  # Necessário para manipular os arrays de índices
 
 # Cria a instância do aplicativo Flask
 app = Flask(__name__)
 
-# --- CORREÇÃO AQUI ---
 # Habilita CORS para todas as rotas, permitindo que o Front-End (Java/JS) acesse esta API
 CORS(app)
-# ---------------------
 
-# Tenta carregar o modelo treinado e o vetorizar
->>>>>>> 886d334 (refactor: reestruturação de pastas, integração IA e dashboard):Hackathon-One-Data-Science/Arquvios Data/app_python.py
+# --- Carregamento do Modelo ---
 try:
-    data = joblib.load('modelo_b2w_rating_sentimento.pkl')
-    model = data['model']
-    vectorizer = data['vectorizer']
+
+    data = joblib.load('modelo_utlc_apps_sentimento.pkl')  # Carrega o arquivo .pkl
+    model = data['model']  # Obtém o modelo
+    vectorizer = data['vectorizer']  # Obtém o vetor de características
     print("Modelo carregado com sucesso!")
-<<<<<<< HEAD:Dados/Arquvios Data/plus/app_python.py
-except Exception as e:
-    print(f"Erro crítico: {e}")
-    model = None
-    vectorizer = None
-
-=======
-
 except Exception as e:
     print(f"Erro: Erro ao carregar o modelo: {e}")
     model = None
     vectorizer = None
 
 # Dicionário para mapear as classes de sentimento
->>>>>>> 886d334 (refactor: reestruturação de pastas, integração IA e dashboard):Hackathon-One-Data-Science/Arquvios Data/app_python.py
 LABEL_MAP = {
     "negative": "Negativo",
     "neutral": "Neutro",
     "positive": "Positivo"
 }
 
-<<<<<<< HEAD:Dados/Arquvios Data/plus/app_python.py
-@app.route('/predict', methods=['POST'])
-def predict():
-    try:
-=======
 # Define a rota para a previsão de sentimentos
 @app.route('/predict', methods=['POST'])
 def predict():
     try:
         # Verifica se o modelo foi carregado antes de tentar usar
         if model is None or vectorizer is None:
-             return jsonify({"erro": "Modelo de IA não está disponível."}), 503
+            return jsonify({"erro": "Modelo de IA não está disponível."}), 503
 
->>>>>>> 886d334 (refactor: reestruturação de pastas, integração IA e dashboard):Hackathon-One-Data-Science/Arquvios Data/app_python.py
+        # Obtém os dados enviados na requisição
         dados = request.get_json()
         texto = dados.get('text') if dados else None
 
+        # Verifica se o texto foi fornecido corretamente
         if not texto or len(texto.strip()) < 5:
             return jsonify({"erro": "Texto não fornecido ou muito curto."}), 400
 
-<<<<<<< HEAD:Dados/Arquvios Data/plus/app_python.py
-        # 1. Transformar o texto
+        # Transforma o texto em um vetor de características
         X = vectorizer.transform([texto])
 
-        # 2. Fazer a previsão
+        # Realiza a previsão
         prediction_label = model.predict(X)[0]
-        proba = float(model.predict_proba(X).max())
-
-        # --- BLOCO NOVO: EXPLICABILIDADE ---
-        palavras_relevantes = []
-
-        # Só podemos explicar se o modelo tiver coeficientes lineares
-        if hasattr(model, 'coef_'):
-            # Pega os nomes de todas as palavras do vocabulário
-            feature_names = vectorizer.get_feature_names_out()
-
-            # Pega os índices das palavras que EXISTEM na frase enviada
-            # X é uma matriz esparsa; nonzero() retorna (indices_linhas, indices_colunas)
-            indices_palavras_na_frase = X.nonzero()[1]
-
-            # Identifica qual linha de coeficientes usar
-            # Se for multiclasse, model.coef_ tem formato (n_classes, n_features)
-            # Precisamos achar o índice numérico da classe prevista (ex: 0, 1 ou 2)
-            classe_idx = np.where(model.classes_ == prediction_label)[0][0]
-
-            # Pega os pesos correspondentes à classe prevista
-            # Se for binário, a lógica é um pouco diferente, mas assumindo multiclasse aqui:
-            if model.coef_.ndim > 1:
-                pesos_classe = model.coef_[classe_idx]
-            else:
-                # Fallback para binário simples (se necessário)
-                pesos_classe = model.coef_[0] if classe_idx == 1 else -model.coef_[0]
-
-            # Monta a lista de palavras e seus pesos
-            for idx in indices_palavras_na_frase:
-                peso = pesos_classe[idx]
-                palavra = feature_names[idx]
-
-                # Opcional: Filtrar apenas palavras com algum impacto relevante
-                palavras_relevantes.append({
-                    "palavra": palavra,
-                    "peso": round(float(peso), 4)
-                })
-
-            # Ordena: As palavras com maior peso positivo aparecem primeiro (ajudaram na decisão)
-            palavras_relevantes = sorted(palavras_relevantes, key=lambda x: x['peso'], reverse=True)
-
-        # -----------------------------------
-
-        return jsonify({
-            "previsao": LABEL_MAP.get(prediction_label, "Desconhecido"),
-            "probabilidade": round(proba, 2),
-            "analise_pesos": palavras_relevantes  # <--- Nova chave no retorno JSON
-=======
-        # Transforma e prevê
-        X = vectorizer.transform([texto])
-        prediction_label = model.predict(X)[0]
-        proba = float(model.predict_proba(X).max())
+        proba = float(model.predict_proba(X).max())  # Obtem a maior probabilidade
 
         return jsonify({
             "previsao": LABEL_MAP.get(prediction_label, "Desconhecido"),
             "probabilidade": round(proba, 2)
->>>>>>> 886d334 (refactor: reestruturação de pastas, integração IA e dashboard):Hackathon-One-Data-Science/Arquvios Data/app_python.py
         })
 
     except Exception as e:
+        # Caso ocorra algum erro, retorna a mensagem de erro
         import traceback
         traceback.print_exc()
         return jsonify({"erro": str(e)}), 500
 
 if __name__ == '__main__':
+    # Executa o aplicativo na porta 5000 e em todos os endereços disponíveis
     app.run(host="0.0.0.0", port=5000)
