@@ -24,18 +24,16 @@ services:
       sentimento-ia-python:
         condition: service_started
       db:
-        condition: service_healthy # Garante que a API só suba quando o banco estiver pronto
+        condition: service_healthy
     ports:
       - "8081:8081"
     environment:
       SPRING_PROFILES_ACTIVE: prod
       SENTIMENT_PYTHON_URL: http://sentimento-ia-python:5000/predict
-      # Configurações alinhadas com sua necessidade:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/sentiment
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: Samuel78@16
+      SPRING_DATASOURCE_URL: ${DB_URL}  # Usando a variável do .env
+      SPRING_DATASOURCE_USERNAME: ${DB_USER_HACKATHON}  # Usando a variável do .env
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD_HACKATHON}  # Usando a variável do .env
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
-      # Correção para o erro de Large Objects (LOB) que vimos antes:
       SPRING_JPA_PROPERTIES_HIBERNATE_JDBC_LOB_NON_CONTEXTUAL_CREATION: "true"
     restart: unless-stopped
     networks:
@@ -48,11 +46,13 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_DB: sentiment
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: Samuel78@16
+      POSTGRES_USER: ${DB_USER_HACKATHON}  # Usando a variável do .env
+      POSTGRES_PASSWORD: ${DB_PASSWORD_HACKATHON}  # Usando a variável do .env
+      SPRING_DATASOURCE_URL: ${DB_URL}  # Usando a variável do .env
+
     ports:
       - "5432:5432"
-    healthcheck: # Adicionado para avisar à API quando o banco aceitar conexões
+    healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d sentiment"]
       interval: 5s
       timeout: 5s
@@ -68,3 +68,4 @@ volumes:
 networks:
   sentiment-net:
     driver: bridge
+
