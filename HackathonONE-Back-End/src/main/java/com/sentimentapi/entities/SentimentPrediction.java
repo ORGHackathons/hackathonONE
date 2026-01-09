@@ -9,7 +9,7 @@ import lombok.Setter; // Gera o setter automaticamente para as variáveis
 
 // A anotação @Getter e @Setter do Lombok geram automaticamente os métodos de acesso (getters e setters) para os campos da classe.
 // O getter serve para "pegar" o valor de um campo, e o setter serve para "definir" o valor de um campo.
-// Essas anotações evitam que você tenha que escrever esses métodos manualmente.
+
 
 @Entity
 @Table(name = "sentiment_prediction_tb")

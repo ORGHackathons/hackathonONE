@@ -20,25 +20,20 @@ import java.time.LocalDateTime;
 public class CommentEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Garante o SERIAL no Postgres
     private Long id;
 
-    // Texto do comentário enviado para análise
     @Lob
     @Column(columnDefinition = "TEXT", nullable = false)
     private String text;
 
-    // Relacionamento obrigatório com a previsão de sentimento
     @ManyToOne(optional = false)
     @JoinColumn(name = "sentiment_prediction_id", nullable = false)
     private SentimentPrediction previsao;
 
-    // Data e hora em que o comentário foi salvo no banco
+    // Alteração aqui: use @CreationTimestamp
+    @Column(name = "data_criacao", nullable = false, updatable = false)
+    @org.hibernate.annotations.CreationTimestamp
     private LocalDateTime dataCriacao;
 
-    // Método executado automaticamente antes do insert
-    @PrePersist
-    public void prePersist() {
-        this.dataCriacao = LocalDateTime.now();
-    }
 }

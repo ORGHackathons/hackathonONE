@@ -22,7 +22,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.List;
 
-// Componente executado na inicialização da aplicação (perfil dev)
+
 // Responsável por carregar dados iniciais a partir de arquivos
 // JSON ou CSV e popular o banco de dados para testes
 @Component

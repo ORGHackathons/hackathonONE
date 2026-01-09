@@ -10,81 +10,72 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-// Controlador REST responsável por expor os endpoints
-// relacionados à análise de sentimento
+
 @RestController
+@CrossOrigin(origins = "*")
 public class SentimentController {
 
-    // Camada de serviço onde está a lógica de negócio
     private final SentimentService sentimentService;
 
-    // Injeção de dependência via construtor
     public SentimentController(SentimentService sentimentService) {
         this.sentimentService = sentimentService;
     }
 
-    // Cria um novo comentário e gera a previsão de sentimento
-    @PostMapping("/sentiment")
-    public ResponseEntity<Map<String, Object>> getSentiment(
-            @RequestBody Map<String, String> request) {
+    @GetMapping("/sentiment")
+    public ResponseEntity<org.springframework.data.domain.Page<Map<String, Object>>> getAllSentiments(
+            @org.springframework.data.web.PageableDefault(size = 5, sort = "id", direction = org.springframework.data.domain.Sort.Direction.DESC)
+            org.springframework.data.domain.Pageable pageable) {
 
-        // Extrai o texto enviado no corpo da requisição
+        // O seu Service precisará de um método que aceite Pageable: sentimentService.getAllComments(pageable)
+        org.springframework.data.domain.Page<CommentEntity> commentsPage = sentimentService.getAllComments(pageable);
+
+        org.springframework.data.domain.Page<Map<String, Object>> response = commentsPage.map(c -> {
+            Map<String, Object> map = new java.util.HashMap<>();
+            map.put("id", c.getId());
+            map.put("text", (c.getText() != null) ? c.getText() : "");
+            map.put("previsao", (c.getPrevisao() != null) ? c.getPrevisao().getLabel() : "N/A");
+            map.put("probabilidade", (c.getPrevisao() != null) ? c.getPrevisao().getProbability() : 0.0);
+            return map;
+        });
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/sentiment")
+    public ResponseEntity<Map<String, Object>> getSentiment(@RequestBody Map<String, String> request) {
         String text = request.get("text");
 
-        // Validação defensiva:
-        // - evita texto nulo
-        // - evita textos muito curtos que prejudicam a previsão
-        if (text == null || text.length() < 5) {
-            return ResponseEntity.badRequest()
-                    .body(Map.of("error", "Texto muito curto ou inválido"));
+        if (text == null || text.trim().length() < 5) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Texto muito curto ou inválido"));
         }
 
-        // Cria o comentário, chama o microserviço Python
-        // e salva a previsão no banco de dados
-        SentimentPrediction prediction =
-                sentimentService.createComment(text);
+        SentimentPrediction prediction = sentimentService.createComment(text);
 
-        // Retorna apenas os dados necessários ao cliente
         return ResponseEntity.ok(Map.of(
                 "previsao", prediction.getLabel(),
                 "probabilidade", prediction.getProbability()
         ));
     }
 
-    // Processa comentários em lote a partir de um arquivo CSV
-    @PostMapping(
-            value = "/sentiment/lote",
-            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
-    )
-    public List<SentimentPrediction> uploadCsv(
-            @RequestParam("file") MultipartFile file) {
-
-        // Toda a lógica de leitura e processamento do CSV
-        // fica encapsulada no service
-        return sentimentService.processoUploadCsv(file);
+    @PostMapping(value = "/sentiment/lote", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<List<SentimentPrediction>> uploadCsv(@RequestParam("file") MultipartFile file) {
+        List<SentimentPrediction> predictions = sentimentService.processoUploadCsv(file);
+        return ResponseEntity.ok(predictions);
     }
 
-    // Busca um comentário e sua previsão pelo ID
     @GetMapping("/sentiment/{id}")
-    public ResponseEntity<Map<String, Object>> getSentimentById(
-            @PathVariable Long id) {
+    public ResponseEntity<Map<String, Object>> getSentimentById(@PathVariable Long id) {
+        CommentEntity comment = sentimentService.getPredictionById(id);
 
-        // Busca o comentário no banco de dados
-        CommentEntity comment =
-                sentimentService.getPredictionById(id);
-
-        // Caso não exista comentário para o ID informado,
-        // retorna HTTP 404
         if (comment == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("error", "Previsão não encontrada"));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "ID não encontrado"));
         }
 
-        // Retorna os dados do comentário e sua previsão
         return ResponseEntity.ok(Map.of(
                 "id", comment.getId(),
                 "text", comment.getText(),
@@ -93,87 +84,51 @@ public class SentimentController {
         ));
     }
 
-    // Retorna estatísticas de sentimento (percentual)
-    // com base nos últimos N comentários
     @GetMapping("/sentiment/stats/{quantidade}")
-    public ResponseEntity<Map<String, Object>> stats(
-            @PathVariable int quantidade) {
-
-        // Evita chamadas inválidas que poderiam
-        // gerar divisão por zero no service
+    public ResponseEntity<Map<String, Object>> stats(@PathVariable int quantidade) {
         if (quantidade <= 0) {
-            return ResponseEntity.badRequest()
-                    .body(Map.of("error", "A quantidade deve ser maior que zero"));
+            return ResponseEntity.badRequest().body(Map.of("error", "Quantidade inválida"));
         }
 
-        // Calcula os percentuais de sentimentos
-        StatsDto stats =
-                sentimentService.getStats(quantidade);
+        StatsDto stats = sentimentService.getStats(quantidade);
 
-        // Retorna os valores já calculados
         return ResponseEntity.ok(Map.of(
                 "positivo", stats.positivo(),
                 "negativo", stats.negativo()
         ));
     }
 
-    // Atualiza o texto de um comentário existente
-    // e recalcula sua previsão de sentimento
     @PutMapping("/sentiment/{id}")
-    public ResponseEntity<Map<String, Object>> updateSentiment(
-            @PathVariable Long id,
-            @RequestBody Map<String, String> request) {
-
-        // Obtém o novo texto informado pelo usuário
+    public ResponseEntity<Map<String, Object>> updateSentiment(@PathVariable Long id, @RequestBody Map<String, String> request) {
         String newText = request.get("text");
 
-        // Validação básica antes de processar
-        if (newText == null || newText.length() < 5) {
-            return ResponseEntity.badRequest()
-                    .body(Map.of("error", "Texto muito curto ou inválido"));
+        if (newText == null || newText.trim().length() < 5) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Texto inválido"));
         }
 
-        // Atualiza o comentário e a previsão no banco
-        Optional<CommentEntity> optionalComentario =
-                sentimentService.updatePrediction(id, newText);
+        Optional<CommentEntity> optionalComentario = sentimentService.updatePrediction(id, newText);
 
-        // Caso o ID não exista, retorna 404
         if (optionalComentario.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("error", "Previsão não encontrada para atualizar"));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Comentário não encontrado"));
         }
 
-        CommentEntity updatedComment =
-                optionalComentario.get();
-
-        // Retorna o comentário já atualizado
+        CommentEntity updated = optionalComentario.get();
         return ResponseEntity.ok(Map.of(
-                "id", updatedComment.getId(),
-                "text", updatedComment.getText(),
-                "previsao", updatedComment.getPrevisao().getLabel(),
-                "probabilidade", updatedComment.getPrevisao().getProbability()
-
+                "id", updated.getId(),
+                "text", updated.getText(),
+                "previsao", updated.getPrevisao().getLabel(),
+                "probabilidade", updated.getPrevisao().getProbability()
         ));
     }
 
-    // Remove um comentário e sua previsão do banco
     @DeleteMapping("/sentiment/{id}")
-    public ResponseEntity<Map<String, Object>> deleteSentiment(
-            @PathVariable Long id) {
+    public ResponseEntity<Map<String, String>> deleteSentiment(@PathVariable Long id) {
+        Optional<CommentEntity> deleted = sentimentService.deletePrediction(id);
 
-        // Tenta remover o comentário pelo ID
-        Optional<CommentEntity> deleted =
-                sentimentService.deletePrediction(id);
-
-        // Se não existir, retorna 404
         if (deleted.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("message", "Comentário não encontrado"));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "ID inexistente"));
         }
 
-        // Confirma a exclusão com sucesso
-        return ResponseEntity.ok(
-                Map.of("message", "Previsão excluída com sucesso")
-        );
+        return ResponseEntity.ok(Map.of("message", "Excluído com sucesso"));
     }
 }

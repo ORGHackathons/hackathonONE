@@ -11,6 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
 
@@ -83,9 +84,9 @@ class SentimentServiceTest {
         // Simula que o banco possui 4 comentários
         when(commentRepository.count()).thenReturn(4L);
 
-        // Simula a busca dos últimos comentários
+
         when(commentRepository.buscarPorUltimos(any()))
-                .thenReturn(List.of(comment1, comment2, comment3, comment4));
+                .thenReturn(new PageImpl<>(List.of(comment1, comment2, comment3, comment4)));
 
         // Executa o método real do service
         StatsDto stats = sentimentService.getStats(4);

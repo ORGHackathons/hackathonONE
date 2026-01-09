@@ -11,10 +11,11 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page; // Importante
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional; // IMPORTANTE
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,7 +29,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional // CORREÇÃO: Garante que o Postgres acesse campos LOB com segurança
+@Transactional
 public class SentimentService {
 
     private final RestTemplate restTemplate;
@@ -38,15 +39,62 @@ public class SentimentService {
     @Value("${sentiment.python.url:http://localhost:5000/predict}")
     private String pythonUrl;
 
+    /**
+     * AJUSTADO: Agora aceita Pageable e retorna Page.
+     * Isso resolve o erro vermelho no SentimentController.
+     */
+    @Transactional(readOnly = true)
+    public Page<CommentEntity> getAllComments(Pageable pageable) {
+        return commentRepository.buscarPorUltimos(pageable);
+    }
+
+    /**
+     * AJUSTADO: Corrigido para lidar com o retorno Page do Repositório.
+     */
+    @Transactional(readOnly = true)
+    public StatsDto getStats(int quantidade) {
+        // Criamos um request para pegar a 'quantidade' desejada na primeira página
+        Pageable pageable = PageRequest.of(0, quantidade);
+        Page<CommentEntity> commentsPage = commentRepository.buscarPorUltimos(pageable);
+
+        if (commentsPage == null || commentsPage.isEmpty()) {
+            return new StatsDto(0.0, 0.0);
+        }
+
+        // Extraímos a lista da página para fazer o cálculo
+        List<CommentEntity> comments = commentsPage.getContent();
+
+        double positivo = 0;
+        double negativo = 0;
+
+        for (CommentEntity comment : comments) {
+            if (comment.getPrevisao() != null && comment.getPrevisao().getLabel() != null) {
+                String label = comment.getPrevisao().getLabel().toLowerCase();
+                if (label.contains("positiv") || label.contains("positive")) {
+                    positivo++;
+                } else if (label.contains("negativ") || label.contains("negative")) {
+                    negativo++;
+                }
+            }
+        }
+
+        double total = positivo + negativo;
+        if (total == 0) return new StatsDto(0.0, 0.0);
+
+        double porcentagemPositivo = Math.round((positivo * 100.0) / total);
+        double porcentagemNegativo = Math.round((negativo * 100.0) / total);
+
+        return new StatsDto(porcentagemPositivo, porcentagemNegativo);
+    }
+
+    // --- MANTIDOS OS MÉTODOS ABAIXO SEM ALTERAÇÃO ---
+
     public SentimentPrediction predictSentiment(String text) {
         Map<String, String> body = Map.of("text", text);
-
         try {
             SentimentDadosDTO dto = restTemplate.postForObject(pythonUrl, body, SentimentDadosDTO.class);
             SentimentPrediction prediction = new SentimentPrediction();
-
             if (dto != null) {
-                // Mapeia os dados do Python (previsao/probabilidade) para a entidade
                 prediction.setLabel(dto.getPrevisao());
                 prediction.setProbability(dto.getProbabilidade());
             } else {
@@ -55,7 +103,6 @@ public class SentimentService {
             }
             return prediction;
         } catch (Exception e) {
-            // Caso a IA Python esteja fora do ar, não quebra a API Java
             SentimentPrediction errorPrediction = new SentimentPrediction();
             errorPrediction.setLabel("Erro IA");
             errorPrediction.setProbability(0.0);
@@ -68,47 +115,10 @@ public class SentimentService {
         return commentRepository.findById(id).orElse(null);
     }
 
-    @Transactional(readOnly = true)
-    public StatsDto getStats(int quantidade) {
-        // CORREÇÃO: Busca os últimos registros conforme solicitado pelo front-end
-        Pageable pageable = PageRequest.of(0, quantidade);
-        List<CommentEntity> comments = commentRepository.buscarPorUltimos(pageable);
-
-        if (comments == null || comments.isEmpty()) {
-            return new StatsDto(0.0, 0.0);
-        }
-
-        double positivo = 0;
-        double negativo = 0;
-
-        for (CommentEntity comment : comments) {
-            // Verificação robusta contra nulos para evitar o erro 500
-            if (comment.getPrevisao() != null && comment.getPrevisao().getLabel() != null) {
-                String label = comment.getPrevisao().getLabel().toLowerCase();
-
-                if (label.contains("positiv") || label.contains("positive")) {
-                    positivo++;
-                } else if (label.contains("negativ") || label.contains("negative")) {
-                    negativo++;
-                }
-            }
-        }
-
-        double total = positivo + negativo;
-        if (total == 0) return new StatsDto(0.0, 0.0);
-
-        // Arredondamento para evitar dízimas no Dashboard
-        double porcentagemPositivo = Math.round((positivo * 100.0) / total);
-        double porcentagemNegativo = Math.round((negativo * 100.0) / total);
-
-        return new StatsDto(porcentagemPositivo, porcentagemNegativo);
-    }
-
     public Optional<CommentEntity> updatePrediction(Long id, String newText) {
         return commentRepository.findById(id).map(commentEntity -> {
             SentimentPrediction prediction = predictSentiment(newText);
             prediction = sentimentPredictionRepository.save(prediction);
-
             commentEntity.setText(newText);
             commentEntity.setPrevisao(prediction);
             return commentRepository.save(commentEntity);
@@ -139,7 +149,6 @@ public class SentimentService {
 
     public SentimentPrediction createComment(String text) {
         SentimentPrediction prediction = predictSentiment(text);
-        // Persiste a predição primeiro
         prediction = sentimentPredictionRepository.save(prediction);
 
         CommentEntity comment = new CommentEntity();
@@ -147,9 +156,7 @@ public class SentimentService {
         comment.setPrevisao(prediction);
         comment.setDataCriacao(LocalDateTime.now());
 
-        // Salva o comentário vinculado à predição
         commentRepository.save(comment);
-
         return prediction;
     }
 }

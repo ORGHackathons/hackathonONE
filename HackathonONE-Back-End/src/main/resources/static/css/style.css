@@ -10,10 +10,17 @@
     --danger-color: #e83f5b;
     --success-color: #04d361;
     --warning-color: #eba417;
-    
+
     --border-radius: 8px;
     --border-light: 1px solid #323238;
     --element-height: 45px; /* ALTURA PADRÃO PARA TUDO */
+}
+
+/* Reset básico para evitar quebras */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
 body {
@@ -25,7 +32,24 @@ body {
     overflow-x: hidden;
 }
 
-/* --- SIDEBAR (MANTIDA IGUAL) --- */
+/* --- BACKGROUND FIXO --- */
+body::before {
+    content: ""; /* Adiciona um elemento fictício */
+    position: fixed; /* Fixa no fundo da tela */
+    top: 0;
+    left: 0;
+    width: 100vw; /* A largura ocupa toda a tela */
+    height: 100vh; /* A altura ocupa toda a tela */
+    background-image: url('../img/hackaones_hero.png'); /* Caminho da imagem do fundo */
+    background-size: cover; /* Ajusta a imagem para cobrir toda a tela */
+    background-repeat: no-repeat; /* Impede a repetição da imagem */
+    background-position: center; /* Centraliza a imagem */
+    opacity: 0.04; /* Torna a imagem bem sutil para não atrapalhar o conteúdo */
+    z-index: -1; /* Coloca atrás de outros elementos */
+    pointer-events: none; /* Impede a interação com a imagem */
+}
+
+/* --- SIDEBAR --- */
 .sidebar {
     width: 250px;
     background-color: var(--bg-sidebar);
@@ -33,6 +57,7 @@ body {
     display: flex;
     flex-direction: column;
     border-right: var(--border-light);
+    flex-shrink: 0; /* Impede a sidebar de encolher */
 }
 
 .logo-container {
@@ -50,7 +75,7 @@ body {
 .sidebar nav ul li:hover, .sidebar nav ul li.active { background-color: var(--primary-color); color: white; }
 
 .sidebar-hero-container {
-    margin-top: 20px; 
+    margin-top: 20px;
     margin-bottom: 20px;
     display: flex;
     justify-content: center;
@@ -70,17 +95,17 @@ body {
 .footer-sidebar { margin-top: auto; font-size: 0.8rem; color: var(--text-secondary); text-align: center; }
 
 /* --- CONTEÚDO --- */
-.dashboard-content { flex: 1; padding: 30px; }
+.dashboard-content { flex: 1; padding: 30px; min-width: 0; }
 .top-header { margin-bottom: 30px; }
 .top-header h2 { font-size: 1.8rem; margin-bottom: 5px; }
 .highlight-text { color: var(--primary-color); font-weight: bold; }
 .cursor { animation: blink 1s infinite; }
 @keyframes blink { 50% { opacity: 0; } }
 
-/* --- GRID --- */
+/* --- GRID 2x2 MELHORADA --- */
 .grid-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
     gap: 20px;
 }
 
@@ -98,38 +123,40 @@ body {
 .card-header { border-bottom: var(--border-light); padding-bottom: 15px; margin-bottom: 20px; }
 .card-header h3 { color: var(--text-primary); font-size: 1.2rem; }
 
-/* --- PADRONIZAÇÃO DE INPUTS E BOTÕES (A MÁGICA ACONTECE AQUI) --- */
-input[type="text"], 
-input[type="number"], 
-.btn, 
+/* --- INPUTS E BOTÕES --- */
+input[type="text"],
+input[type="number"],
+textarea,
+.btn,
 .btn-icon,
 .tag {
-    height: var(--element-height); /* Todos com a mesma altura */
-    border-radius: 4px;
     font-family: 'Inter', sans-serif;
     font-size: 0.95rem;
+    box-sizing: border-box;
+}
+
+input[type="text"],
+input[type="number"],
+.btn,
+.tag {
+    height: var(--element-height);
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    box-sizing: border-box;
 }
 
 input, textarea {
     background-color: #121214;
     border: 1px solid #323238;
     color: white;
-    padding: 0 15px; /* Padding lateral */
+    padding: 10px 15px;
     width: 100%;
+    border-radius: 4px;
 }
-
-textarea { padding-top: 10px; } /* Ajuste para textarea */
 
 input:focus, textarea:focus { outline: 2px solid var(--primary-color); border-color: transparent; }
 
-/* Remove margens inferiores padrão para usar gap do flexbox */
-input { margin-bottom: 0; } 
-
-.btn { border: none; cursor: pointer; font-weight: 600; transition: 0.2s; padding: 0 20px; }
+.btn { border: none; cursor: pointer; font-weight: 600; transition: 0.2s; padding: 0 20px; border-radius: 4px; }
 .btn-primary { background-color: var(--primary-color); color: white; }
 .btn-primary:hover { background-color: var(--primary-hover); }
 .btn-outline { background-color: transparent; border: 1px solid var(--primary-color); color: var(--primary-color); }
@@ -138,8 +165,10 @@ input { margin-bottom: 0; }
 .btn-danger { background-color: var(--danger-color); color: white; }
 .btn-warning { background-color: var(--warning-color); color: #121214; }
 .btn-small { padding: 0 15px; }
+.btn-secondary { background-color: #323238; color: var(--text-secondary); padding: 5px 15px; border-radius: 4px; border: none; cursor: pointer; }
+.btn-secondary:hover { background-color: #3e3e45; color: white; }
 
-/* Layout de Linha (Input ao lado do Botão) */
+/* Layout de Linha */
 .action-buttons, .input-row, .custom-stats {
     display: flex;
     gap: 10px;
@@ -147,15 +176,10 @@ input { margin-bottom: 0; }
     margin-bottom: 15px;
 }
 
-/* Faz o input ocupar todo o espaço disponível na linha */
-.input-row input, .custom-stats input {
-    flex: 1; 
-}
-
 /* --- ESTATÍSTICAS --- */
 .stats-buttons {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr; /* 3 colunas iguais */
+    grid-template-columns: 1fr 1fr 1fr;
     gap: 10px;
     margin-bottom: 15px;
 }
@@ -164,17 +188,21 @@ input { margin-bottom: 0; }
     background-color: #323238;
     color: var(--text-secondary);
     border: none;
-    width: 100%; /* Ocupa a coluna do grid */
+    width: 100%;
     cursor: pointer;
+    border-radius: 4px;
 }
 .tag:hover { background-color: var(--primary-color); color: white; }
 
 .btn-icon {
-    width: var(--element-height); /* Quadrado */
+    width: var(--element-height);
+    height: var(--element-height);
     background-color: var(--primary-color);
     border: none;
     color: white;
     font-size: 1.2rem;
+    border-radius: 4px;
+    cursor: pointer;
 }
 
 .stats-display {
@@ -185,81 +213,101 @@ input { margin-bottom: 0; }
     border: 1px dashed #323238;
 }
 
-/* --- CRUD --- */
-.card-body.scrollable { max-height: 500px; overflow-y: auto; padding-right: 5px; }
+/* --- CRUD E LISTAGEM --- */
+.card-body.scrollable {
+    max-height: 500px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+.scrollable::-webkit-scrollbar { width: 6px; }
+.scrollable::-webkit-scrollbar-thumb { background: #323238; border-radius: 10px; }
+
 .crud-group h4 { margin-bottom: 10px; color: var(--text-secondary); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px;}
 
 .result-box {
     margin-top: 5px;
     padding: 10px;
-    background-color: rgba(235, 164, 23, 0.1); /* Fundo amarelado transparente */
+    background-color: rgba(235, 164, 23, 0.05);
     border: 1px solid var(--warning-color);
     border-radius: 4px;
     color: var(--warning-color);
-    font-family: monospace;
+    font-family: 'Roboto Mono', monospace;
     font-size: 0.9rem;
-    min-height: 45px; /* Mesma altura dos inputs */
+    min-height: 45px;
     display: flex;
     align-items: center;
 }
 
 hr { border: 0; border-top: 1px solid #323238; margin: 20px 0; }
-
 .full-width { width: 100%; }
+
+/* --- RESULTADO BUSCA E LISTAGEM --- */
+.resultado-busca-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    padding: 15px;
+    border-bottom: 1px solid #323238;
+}
+
+.resultado-busca-container:last-child { border-bottom: none; }
+
+.resultado-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--primary-color);
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
+.resultado-texto { font-size: 0.95rem; line-height: 1.6; }
+
+.resultado-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    display: inline-block;
+}
+
+.resultado-badge.positivo { background-color: var(--success-color); color: #121214; }
+.resultado-badge.negativo { background-color: var(--danger-color); color: white; }
+.resultado-badge.neutro { background-color: var(--primary-color); color: white; }
+
+/* --- ANÁLISE DE PESO --- */
+.analise-peso { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+
+.analise-peso-item {
+    background-color: rgba(130, 87, 229, 0.1);
+    color: var(--primary-color);
+    padding: 5px 12px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border: 1px solid rgba(130, 87, 229, 0.3);
+    transition: 0.2s;
+}
+
+.analise-peso-item:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.paginacao {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
 
 /* --- RESPONSIVO --- */
 @media (max-width: 768px) {
     body { flex-direction: column; }
-    .sidebar { width: 100%; height: auto; padding: 15px; }
-    .sidebar nav, .footer-sidebar { display: none; }
-    .sidebar-hero-container { display: none; } /* Oculta imagem grande no mobile */
-    .dashboard-content { padding: 15px; }
-}
-/* --- RESULTADO BUSCA POR ID --- */
-
-.resultado-busca-container {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    width: 100%;
-    color: var(--text-primary);
-    font-family: 'Inter', sans-serif;
-}
-
-.resultado-linha {
-    display: flex;
-    flex-direction: column;
-}
-
-.resultado-label {
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: var(--text-secondary);
-    margin-bottom: 4px;
-}
-
-.resultado-texto {
-    font-size: 0.9rem;
-    line-height: 1.5;
-    color: var(--text-primary);
-}
-
-/* Badge de sentimento */
-.resultado-badge {
-    align-self: flex-start;
-    padding: 4px 10px;
-    border-radius: 999px;
-    font-size: 0.75rem;
-    font-weight: 600;
-}
-
-.resultado-badge.positivo {
-    background-color: var(--success-color);
-    color: #121214;
-}
-
-.resultado-badge.negativo {
-    background-color: var(--danger-color);
-    color: white;
+    .sidebar { width: 100%; border-right: none; border-bottom: var(--border-light); }
+    .sidebar nav, .footer-sidebar, .sidebar-hero-container { display: none; }
+    .grid-container { grid-template-columns: 1fr; }
 }
