@@ -54,7 +54,7 @@ Focado em **Atendimento ao Cliente, Marketing e Operações** que buscam entende
 
 ## 📊 Estado do Projeto
 
-![Progresso](https://img.shields.io/badge/Progresso-70%25-yellow?style=for-the-badge&labelColor=000000&color=FFFF00&logo=github)
+![Progresso](https://img.shields.io/badge/Progresso-95%25-green?style=for-the-badge&labelColor=000000&color=#4c1ogo=github)
 
 ## 🏗️ Arquitetura Técnica
 
