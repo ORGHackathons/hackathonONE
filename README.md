@@ -4,6 +4,14 @@
 
 > **Hackathon MVP**: Solução automatizada para classificação de feedbacks de clientes utilizando Processamento de Linguagem Natural (NLP).
 
+## 🌐 Acesso Direto (Cloud)
+O projeto está em produção e pode ser acessado publicamente:
+👉 **URL:** [http://137.131.172.156:8081](http://137.131.172.156:8081)
+
+---
+
+> **Hackathon MVP**: Solução automatizada para classificação de feedbacks de clientes utilizando Processamento de Linguagem Natural (NLP).
+
 ## 💡 Sobre o Projeto
 
 Empresas recebem milhares de comentários diariamente e não conseguem ler todos manualmente. A **SentimentoAPI** oferece uma solução automática para classificar mensagens e gerar informações acionáveis, permitindo:
@@ -33,22 +41,14 @@ Focado em **Atendimento ao Cliente, Marketing e Operações** que buscam entende
 
 ---
 
-<p>Este projeto utiliza as seguintes tecnologias:</p>
-<ul>
-  <li><strong>Java 21</strong>: Linguagem de programação utilizada para desenvolver o backend.</li>
-  <li><strong>Spring Boot</strong>: Framework Java utilizado para desenvolver a API do sistema.</li>
-  <li><strong>Python 3.9</strong>: Linguagem de programação usada no microserviço de Data Science.</li>
-  <li><strong>Flask</strong>: Framework Python para construir a API que hospeda o modelo de Machine Learning.</li>
-  <li><strong>Scikit-learn</strong>: Biblioteca Python para machine learning, utilizada para treinar o modelo de sentimento.</li>
-  <li><strong>Docker</strong>: Plataforma para automatizar a implantação de aplicações em containers, facilitando o desenvolvimento e a execução do projeto em diferentes ambientes.</li>
-  <li><strong>Joblib</strong>: Biblioteca Python para serialização do modelo treinado, permitindo seu carregamento eficiente no ambiente de produção.</li>
-  <li><strong>TensorFlow</strong>: Embora o modelo atual utilize o Scikit-learn, o TensorFlow pode ser utilizado para treinamento mais avançado, como redes neurais.</li>
-  <li><strong>H2</strong>: Banco de dados em memória utilizado para testes e desenvolvimento.</li>
-  <li><strong>PostgreSQL</strong>: Sistema de gerenciamento de banco de dados relacional utilizado em produção.</li>
-  <li><strong>GitHub</strong>: Plataforma de hospedagem de código, utilizada para versionamento do projeto e colaboração entre os desenvolvedores.</li>
-  <li><strong>Postman</strong>: Ferramenta usada para testar as APIs de forma rápida e eficaz, permitindo simular requisições HTTP e visualizar as respostas.</li>
-</ul>
+### Componentes de Infraestrutura:
+* **Oracle Cloud (OCI)**: Hospedagem em instância VM Ubuntu, utilizando regras de segurança para liberação de portas (8081) e firewall (iptables/ufw).
+* **Docker Hub**: Imagens versionadas e distribuídas publicamente para facilitar o deploy contínuo.
+    * `marcosynky/hackaones:java-api`
+    * `marcosynky/hackaones:python-ia`
+* **Docker Compose**: Orquestração de 3 containers (Frontend/API Java, Microserviço Python e Banco Postgres).
 
+---
 
 
 
