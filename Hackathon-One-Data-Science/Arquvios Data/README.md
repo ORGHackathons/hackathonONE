@@ -3,7 +3,7 @@
 Este projeto implementa um modelo de classificação de sentimento para textos em português. Inclui pré-processamento de texto, treinamento de um modelo de Regressão Logística, e serialização para uso em aplicações Back-End.
 
 ### 1. Visão Geral e Principais Descobertas
-O objetivo foi construir um classificador de sentimento para avaliações de produtos em português. O dataset `buscape.csv` foi utilizado, onde ratings de 1 a 5 foram categorizados em `Negativo` (1, 2, 3), `Neutro` (4) e `Positivo` (5). Uma função de pré-processamento robusta foi desenvolvida, garantindo que palavras de negação (como 'não') fossem mantidas para uma análise mais precisa. Textos foram transformados em vetores TF-IDF e um modelo de Regressão Logística foi treinado.
+O objetivo foi construir um classificador de sentimento para avaliações de produtos em português. O dataset `utlc_apps.csv` foi utilizado, onde ratings de 1 a 5 foram categorizados em `Negativo` (1, 2), `Neutro` (3) e `Positivo` (4, 5). Uma função de pré-processamento robusta foi desenvolvida, garantindo que palavras de negação (como 'não') fossem mantidas para uma análise mais precisa. Textos foram transformados em vetores TF-IDF e um modelo de Regressão Logística foi treinado.
 
 ### 2. Pré-processamento de Texto
 Uma função robusta de pré-processamento de texto foi desenvolvida e aplicada à coluna `review_text`, criando a nova coluna `review_text_cleaned`. Este processo incluiu:
@@ -17,9 +17,9 @@ Recursos NLTK (`stopwords`, `punkt`, `rslp`) foram garantidos para suporte ao pr
 
 ### 3. Re-definição e Categorização dos Rótulos de Sentimento
 A coluna `rating` original (escala 1-5) foi redefinida para três categorias de sentimento mais abrangentes: `Negativo`, `Neutro` e `Positivo`.
-*   **Negativo**: Ratings 1, 2 e 3.
-*   **Neutro**: Rating 4.
-*   **Positivo**: Rating 5.
+*   **Negativo**: Ratings 1, 2.
+*   **Neutro**: Rating 3.
+*   **Positivo**: Rating 4, 5.
 Esta nova categorização (`sentimento_categorizado`) foi utilizada como alvo para o treinamento do modelo revisado, com a distribuição das classes sendo predominantemente Neutra e Positiva.
 
 ### 4. Transformação TF-IDF (com N-grams)
@@ -69,3 +69,52 @@ O projeto resultou em um modelo funcional e robusto de análise de sentimento pa
 
 ## Como Executar o Projeto
 Consulte o `README.md` completo e os scripts auxiliares para instruções detalhadas sobre a configuração do ambiente, preparação dos recursos NLTK e execução do exemplo da API.
+
+
+
+### Projeto de Análise de Sentimento: UTLC Apps
+Este projeto foca no desenvolvimento de um modelo de classificação de sentimentos em português, utilizando o dataset utlc_apps.csv. O objetivo é categorizar avaliações de aplicativos em três classes de sentimento: Negativo, Neutro e Positivo.
+
+### 1. Visão Geral do Dataset
+O conjunto de dados contém mais de 1 milhão de registros, apresentando as seguintes características:
+
+Total de instâncias: 1.039.535.
+
+Colunas principais: * review_text: Texto original da avaliação.
+
+review_text_processed: Texto após limpeza e pré-processamento.
+
+rating: Nota numérica atribuída pelo usuário (1 a 5).
+
+Distribuição: A nota média é de aproximadamente 3.95, indicando uma tendência predominante para avaliações positivas no corpus original.
+
+### 2. Engenharia de Labels (Categorização)
+Para simplificar o problema de classificação e aumentar a robustez do modelo, as avaliações originais (escala 1-5) foram mapeadas em categorias semânticas:
+
+Negativo: Notas 1 e 2.
+
+Neutro: Nota 3.
+
+Positivo: Notas 4 e 5.
+
+### 3. Pipeline de Processamento e Modelagem
+O fluxo de trabalho seguiu as etapas clássicas de Processamento de Linguagem Natural (NLP) e Machine Learning:
+
+Vetorização: Utilizou-se o TfidfVectorizer para transformar o texto processado em representações numéricas, ponderando a importância das palavras com base em sua frequência no documento versus sua raridade no corpus (TF-IDF).
+
+Modelagem: Foi treinado um modelo de Regressão Logística (LogisticRegression), selecionado por sua excelente eficiência computacional e alta interpretabilidade em tarefas de classificação binária e multiclasse de texto.
+
+Métricas de Avaliação: O desempenho do modelo foi validado através de:
+
+Acurácia Global.
+
+F1-Score (para equilibrar precisão e recall).
+
+Matriz de Confusão.
+
+### 4. Resultados e Exportação
+O modelo final foi consolidado em um objeto de pipeline para garantir que o vetorizador e o classificador permaneçam sincronizados durante o deploy:
+
+Serialização: O modelo treinado e o vetorizador TF-IDF foram salvos em um único arquivo chamado modelo_utlc_apps_sentimento.pkl utilizando a biblioteca joblib.
+
+Metadados do Pipeline: Além dos pesos do modelo, o arquivo exportado contém o mapa de sentimentos e a regra de conversão de rating utilizada (1-2=negative, 3=neutral, 4-5=positive), facilitando a integração com sistemas de Back-End.
