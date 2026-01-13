@@ -8,3 +8,7 @@ streamlit==1.42.0
 transformers==4.36.2
 scikit-learn==1.6.1
 flask-cors==3.0.10
+langdetect==1.0.9
+requests==2.32.3
+
+

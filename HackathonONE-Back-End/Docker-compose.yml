@@ -1,25 +1,20 @@
-version: '3.8'
-
 services:
-
-  # Serviço Python (microserviço de IA)
+  # Serviço Python (Microserviço de IA)
   sentimento-ia-python:
     container_name: sentimento-ia-python
-    # Tag específica para o seu repositório único
     image: marcosynky/hackaones:python-ia
     build:
       context: ../Hackathon-One-Data-Science/Arquvios Data
       dockerfile: Dockerfile
     ports:
       - "5000:5000"
-    restart: unless-stopped
+    restart: always
     networks:
       - sentiment-net
 
-  # Serviço Java (API principal com Spring Boot)
+  # Serviço Java (API Spring Boot)
   sentimento-api-java:
     container_name: sentimento-api-java
-    # Tag específica para o seu repositório único
     image: marcosynky/hackaones:java-api
     build:
       context: .
@@ -30,7 +25,6 @@ services:
       db:
         condition: service_healthy
     ports:
-
       - "8081:8081"
     environment:
       - TZ=America/Sao_Paulo
@@ -40,8 +34,7 @@ services:
       - SPRING_DATASOURCE_USERNAME=${DB_USER_HACKATHON}
       - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD_HACKATHON}
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
-      - SPRING_JPA_PROPERTIES_HIBERNATE_JDBC_LOB_NON_CONTEXTUAL_CREATION=true
-    restart: unless-stopped
+    restart: always
     networks:
       - sentiment-net
 
@@ -49,7 +42,7 @@ services:
   db:
     image: postgres:15
     container_name: postgres-sentiment
-    restart: unless-stopped
+    restart: always
     environment:
       - TZ=America/Sao_Paulo
       - POSTGRES_DB=sentiment
@@ -58,12 +51,30 @@ services:
     ports:
       - "5434:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER_HACKATHON} -d sentiment"]
+      test: ["CMD-SHELL", "pg_isready -U $${DB_USER_HACKATHON} -d sentiment"]
       interval: 5s
       timeout: 5s
       retries: 5
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - sentiment-net
+
+  # Front-end Streamlit
+  streamlit-playground:
+    container_name: streamlit-frontend
+    image: marcosynky/hackaones:streamlit-ui
+    build:
+      # AJUSTE O CAMINHO ABAIXO PARA O NOME EXATO DA PASTA
+      context: ./Arquivos Data
+      dockerfile: Dockerfile
+    ports:
+      - "8501:8501"
+    environment:
+      - API_URL=http://sentimento-api-java:8081/sentiment
+    restart: always
+    depends_on:
+      - sentimento-api-java
     networks:
       - sentiment-net
 
@@ -73,3 +84,4 @@ volumes:
 networks:
   sentiment-net:
     driver: bridge
+

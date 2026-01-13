@@ -1,26 +1,17 @@
-# Usa uma imagem leve com Python
 FROM python:3.9-slim
 
-# Define o diretório de trabalho
 WORKDIR /app
 
-# [MELHORIA] Instala dependências do sistema necessárias para Scikit-learn/Pandas
-# O 'rm -rf' no final limpa o cache do apt para manter a imagem pequena
-RUN apt-get update && apt-get install -y \
-    libgomp1 \
-    && rm -rf /var/lib/apt/lists/*
-
-# [MELHORIA] Copia APENAS o requirements primeiro para aproveitar o cache do Docker
+# Copia os arquivos de dependências e instala
 COPY requirements.txt .
-
-# Instala as bibliotecas
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copia o restante dos arquivos (código, modelo .pkl, etc)
+# Copia o restante dos arquivos (incluindo o app.py)
 COPY . .
 
-# Expõe a porta
-EXPOSE 5000
+# Expõe a porta do Streamlit
+EXPOSE 8501
 
-# Comando para rodar (Verifique se o nome do arquivo é este mesmo)
-CMD ["python", "app_python.py"]
+# Comando para rodar a aplicação
+CMD ["streamlit", "run", "app.py", "--server.port=8501", "--server.address=0.0.0.0"]
+

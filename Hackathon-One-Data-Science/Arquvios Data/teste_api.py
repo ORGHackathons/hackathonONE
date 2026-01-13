@@ -1,7 +1,7 @@
 import requests
 import json
 
-# URL da sua API rodando no Docker
+# URL da API rodando no Docker
 url = "http://localhost:5000/predict"
 
 # Lista de frases para testar
