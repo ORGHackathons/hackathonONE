@@ -274,6 +274,12 @@ Atua como o Gateway da aplicação e orquestrador de dados:
 
 ---
 
+## 🌟 Funcionalidades Extras (Diferenciais)
+- **Detecção Automática de Idioma**: Suporte a Português (PT) e Espanhol (ES) via `langdetect`.
+- **Interface de Teste Streamlit**: Playground interativo para validação rápida de hipóteses.
+- **Arquitetura Híbrida**: Frontend Streamlit consumindo API Java em Nuvem.
+
+
 ## 🧠 Conceito Técnico: Vetorização TF-IDF
 Para converter palavras em números compreensíveis pela máquina, utilizamos a técnica **TF-IDF** ($Term Frequency - Inverse Document Frequency$):
 $$w_{i,j} = tf_{i,j} \times \log(\frac{N}{df_i})$$
