@@ -70,9 +70,9 @@ O projeto resultou em um modelo funcional e robusto de análise de sentimento pa
 ## Como Executar o Projeto
 Consulte o `README.md` completo e os scripts auxiliares para instruções detalhadas sobre a configuração do ambiente, preparação dos recursos NLTK e execução do exemplo da API.
 
+---------------------------------------------------------------------------------------------------------------------------------------
 
-
-### Projeto de Análise de Sentimento: UTLC Apps
+## Projeto de Análise de Sentimento: UTLC Apps
 Este projeto foca no desenvolvimento de um modelo de classificação de sentimentos em português, utilizando o dataset utlc_apps.csv. O objetivo é categorizar avaliações de aplicativos em três classes de sentimento: Negativo, Neutro e Positivo.
 
 ### 1. Visão Geral do Dataset
