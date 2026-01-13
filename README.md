@@ -7,8 +7,7 @@
 ## 🌐 Acesso Direto (Cloud)
 O projeto está em produção e pode ser acessado publicamente:
 👉 **URL:** [http://137.131.172.156:8081](http://137.131.172.156:8081)
-- **Frontend**: [http://137.131.172.156:8501](http://137.131.172.156:8501)
-- **API Health**: [http://137.131.172.156:8081/actuator/health](http://137.131.172.156:8081/actuator/health)
+
 
 ---
 
