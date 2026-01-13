@@ -278,6 +278,7 @@ Atua como o Gateway da aplicação e orquestrador de dados:
 - **Detecção Automática de Idioma**: Suporte a Português (PT) e Espanhol (ES) via `langdetect`.
 - **Interface de Teste Streamlit**: Playground interativo para validação rápida de hipóteses.
 - **Arquitetura Híbrida**: Frontend Streamlit consumindo API Java em Nuvem.
+ 👉 **URL:** [http://137.131.172.156:8501](http://137.131.172.156:8501)
 
 
 ## 🧠 Conceito Técnico: Vetorização TF-IDF
