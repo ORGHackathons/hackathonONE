@@ -1,17 +1,26 @@
-# HackathonONE (Oracle + Alura)
-
-# 📊 SentimentoAPI - Análise de Sentimento com IA e Microserviços
-
-> **Hackathon MVP**: Solução automatizada para classificação de feedbacks de clientes utilizando Processamento de Linguagem Natural (NLP).
+# 📊 SentimentoAPI - Inteligência Artificial & Microserviços
+**Hackathon 2025-2026 (Oracle + Alura)**
 
 ## 🌐 Acesso Direto (Cloud)
-O projeto está em produção e pode ser acessado publicamente:
-👉 **Dashboard Administrativo:** [http://137.131.172.156:8081](http://137.131.172.156:8081).
-👉 **Playground Interativo (Streamlit):** [http://137.131.172.156:8501](http://137.131.172.156:8501).
-👉 **Endpoint de API (JSON):** [http://137.131.172.156:8081/sentiment](http://137.131.172.156:8081/sentiment).
+O ecossistema está operacional na Oracle Cloud e pode ser acessado publicamente nos seguintes endereços:
 
+* 🚀 **Playground Interativo (Streamlit):** [http://137.131.172.156:8501](http://137.131.172.156:8501)
+* 📊 **Dashboard Administrativo (Java):** [http://137.131.172.156:8081](http://137.131.172.156:8081)
+* 🔌 **Endpoint de API (JSON):** [http://137.131.172.156:8081/sentiment](http://137.131.172.156:8081/sentiment)
 
 ---
+
+## 🏗️ Jornada do Projeto: Do Modelo à API
+O desenvolvimento seguiu uma estrutura rigorosa de Ciência de Dados integrada à Engenharia de Software, focada na transição fluida entre a exploração de dados e a entrega de valor em produção.
+
+### 1. Desenvolvimento e Seleção do Modelo
+* **Exploração e Processamento**: Realizamos a limpeza de dados e a vetorização utilizando a técnica **TF-IDF** para destacar termos carregados de sentimento.
+* **Modelos Testados**: Foram avaliados diversos algoritmos, incluindo **Regressão Logística**, **Gradient Boosting**, **CatBoost** e **Random Forest**.
+* **Otimização**: O modelo final foi selecionado por apresentar o melhor alinhamento aos objetivos de negócio, utilizando ajustes de *threshold* para otimizar a precisão das previsões.
+
+### 2. Implementação e Inferência
+* **Contrato da API**: O sistema recebe entradas de texto e retorna uma predição binária (Positivo/Negativo) com a respectiva probabilidade.
+* **Lógica de Inferência**: A API processa os dados em tempo real, atingindo índices de confiança de até **98%** em textos de alta clareza semântica.
 
 > **Hackathon MVP**: Solução automatizada para classificação de feedbacks de clientes utilizando Processamento de Linguagem Natural (NLP).
 
@@ -80,6 +89,19 @@ graph LR
     
 
  ```
+
+
+## 🛠️ Arquitetura de Microserviços
+O projeto utiliza uma rede conteinerizada para garantir que cada componente execute sua função de forma isolada e eficiente:
+
+| Serviço | Tecnologia | Função Principal |
+| :--- | :--- | :--- |
+| **Back-End** | Java Spring Boot | Orquestração, Gateway de API e Persistência no banco. |
+| **Motor de IA** | Python Flask | Execução do modelo de Machine Learning e Inferência. |
+| **Interface** | Streamlit | Interface amigável para análise multilíngue e testes rápidos. |
+| **Banco de Dados** | PostgreSQL | Armazenamento de históricos para auditoria e análise temporal. |
+
+---
 ### Data Science
 
 * **Python 3.9**
@@ -283,6 +305,10 @@ Atua como o Gateway da aplicação e orquestrador de dados:
 - **Arquitetura Híbrida**: Frontend Streamlit consumindo API Java em Nuvem.
  👉 **URL:** [http://137.131.172.156:8501](http://137.131.172.156:8501)
 
+## 🔒 Segurança e Infraestrutura
+A aplicação está hospedada em uma instância Ubuntu na **Oracle Cloud**, protegida por regras rígidas de Ingress (Firewall):
+* **Portas Liberadas**: 8081 (Java API), 8501 (Streamlit UI), 5000 (Python IA) e 5434 (PostgreSQL).
+* **Orquestração**: Gestão simplificada via Docker Compose, permitindo replicação idêntica do ambiente de desenvolvimento em produção.
 
 ## 🧠 Conceito Técnico: Vetorização TF-IDF
 Para converter palavras em números compreensíveis pela máquina, utilizamos a técnica **TF-IDF** ($Term Frequency - Inverse Document Frequency$):
