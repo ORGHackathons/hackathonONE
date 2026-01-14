@@ -6,9 +6,9 @@
 
 ## 🌐 Acesso Direto (Cloud)
 O projeto está em produção e pode ser acessado publicamente:
-👉 **Dashboard Administrativo:** [http://137.131.172.156:8081](http://137.131.172.156:8081)
-👉 **Playground Interativo (Streamlit):** [http://137.131.172.156:8501](http://137.131.172.156:8501)
-👉 **Endpoint de API (JSON):** [http://137.131.172.156:8081/sentiment](http://137.131.172.156:8081/sentiment)
+👉 **Dashboard Administrativo:** [http://137.131.172.156:8081](http://137.131.172.156:8081).
+👉 **Playground Interativo (Streamlit):** [http://137.131.172.156:8501](http://137.131.172.156:8501).
+👉 **Endpoint de API (JSON):** [http://137.131.172.156:8081/sentiment](http://137.131.172.156:8081/sentiment).
 
 
 ---
