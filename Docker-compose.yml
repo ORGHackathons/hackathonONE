@@ -1,0 +1,93 @@
+services:
+  # Serviço Python (Microserviço de IA)
+  sentimento-ia-python:
+    container_name: sentimento-ia-python
+    image: marcosynky/hackaones:python-ia
+    build:
+      context: ../Hackathon-One-Data-Science/Arquivos Data
+      dockerfile: Dockerfile.ia
+    ports:
+      - "5000:5000"
+    restart: always
+    networks:
+      - sentiment-net
+
+  # Serviço Java (API Spring Boot)
+  sentimento-api-java:
+    container_name: sentimento-api-java
+    image: marcosynky/hackaones:java-api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      sentimento-ia-python:
+        condition: service_started
+      db:
+        condition: service_healthy
+    ports:
+      - "8081:8081"
+    environment:
+      - TZ=America/Sao_Paulo
+      - SPRING_PROFILES_ACTIVE=prod
+      - SENTIMENT_PYTHON_URL=http://sentimento-ia-python:5000/predict
+      - SPRING_DATASOURCE_URL=${DB_URL}
+      - SPRING_DATASOURCE_USERNAME=${DB_USER_HACKATHON}
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD_HACKATHON}
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_MVC_CORS_ALLOWED_ORIGIN_PATTERNS=http://137.131.172.156:8501,http://localhost:8501
+      - SPRING_MVC_CORS_ALLOW_CREDENTIALS=false
+    restart: always
+    networks:
+      - sentiment-net
+
+  # Banco de Dados PostgreSQL
+  # Banco de Dados PostgreSQL
+  db:
+    image: postgres:15
+    container_name: postgres-sentiment
+    restart: always
+    environment:
+      - TZ=America/Sao_Paulo
+      - POSTGRES_DB=sentiment
+      - POSTGRES_USER=${DB_USER_HACKATHON}
+      - POSTGRES_PASSWORD=${DB_PASSWORD_HACKATHON}
+    ports:
+      - "5434:5432"
+    healthcheck:
+
+      # Isso garante que o teste passe mesmo antes do seu usuário customizado ser indexado
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d sentiment" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s # Dá uma folga de 10s antes de começar a contar as falhas
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - sentiment-net
+
+  # Front-end Streamlit
+  streamlit-playground:
+    container_name: streamlit-frontend
+    image: marcosynky/hackaones:streamlit-ui
+    build:
+      # AJUSTE O CAMINHO ABAIXO PARA O NOME EXATO DA PASTA
+      context: ../Hackathon-One-Data-Science/Arquivos Data
+      dockerfile: Dockerfile
+    ports:
+      - "8501:8501"
+    environment:
+      - API_URL=http://sentimento-api-java:8081/sentiment
+    restart: always
+    depends_on:
+      - sentimento-api-java
+    networks:
+      - sentiment-net
+
+volumes:
+  postgres_data:
+
+networks:
+  sentiment-net:
+    driver: bridge
+

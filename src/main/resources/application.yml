@@ -1,0 +1,39 @@
+spring:
+  application:
+    name: sentiment
+
+  profiles:
+    active: prod
+
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
+
+  # Configurações de Banco de Dados para o ambiente Docker
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        # CORREÇÃO CRÍTICA para o erro de 'Large Objects' e 'undefined' no Dashboard
+        jdbc:
+          lob:
+            non_contextual_creation: true
+        format_sql: true
+
+server:
+  port: 8081
+
+ia:
+  service:
+    # Vincula a configuração do Java à variável do Docker Compose
+    url: ${SENTIMENT_PYTHON_URL}

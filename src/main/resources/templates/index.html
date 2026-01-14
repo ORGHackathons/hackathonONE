@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HackaOnes | Sentiment Dashboard</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<aside class="sidebar">
+    <div class="logo-container">
+        <img src="/img/hackaones_hero.png" alt="Logo HackaOnes" class="logo-img">
+        <h1>HackaOnes</h1>
+    </div>
+    <nav>
+        <ul>
+            <li class="active">Dashboard</li>
+            <li>Relatórios (Em breve)</li>
+            <li>Configurações</li>
+        </ul>
+    </nav>
+
+    <div class="sidebar-hero-container">
+        <img src="/img/hackaones_hero.png" alt="Destaque Hacker" class="sidebar-hero">
+    </div>
+
+    <div class="footer-sidebar">
+        <p>&copy; 2025 Oracle Next Education</p>
+    </div>
+</aside>
+
+<main class="dashboard-content">
+
+    <header class="top-header">
+        <div class="welcome-text">
+            <h2>Análise de Sentimento: <span id="palavra" class="highlight-text">Oracle</span><span class="cursor">|</span></h2>
+            <p>Gerencie feedbacks e analise dados em tempo real.</p>
+        </div>
+    </header>
+
+    <section class="grid-container">
+
+        <div class="card nova-analise">
+            <div class="card-header">
+                <h3>Nova Análise</h3>
+            </div>
+            <div class="card-body">
+                <p style="margin-bottom: 15px;">Ações rápidas para novos dados:</p>
+
+                <div class="action-buttons">
+                    <button id="btn-comentario" class="btn btn-primary full-width">Escrever</button>
+                    <button id="btn-arquivo" class="btn btn-outline full-width">Upload CSV</button>
+                    <input type="file" id="arquivo-csv" accept=".csv" style="display: none;">
+                </div>
+                <div id="resultado-lote" class="resultado-lote-container" style="display: none;"></div>
+
+                <div id="box-comentario" style="display: block; margin-top: 15px;">
+                    <textarea id="texto-comentario" maxlength="500" rows="4" placeholder="Digite a opinião do cliente aqui..." style="margin-bottom: 10px;"></textarea>
+                    <button id="btn-enviar-comentario" class="btn btn-success full-width">Analisar Sentimento</button>
+                    <div id="resultado-comentario" style="margin-top: 10px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card estatisticas">
+            <div class="card-header">
+                <h3>Métricas de Sentimento</h3>
+            </div>
+            <div class="card-body">
+                <p class="label" style="margin-bottom: 10px;">Últimos registros:</p>
+                <div class="stats-buttons">
+                    <button class="btn-stats tag" data-qtd="10">10</button>
+                    <button class="btn-stats tag" data-qtd="50">50</button>
+                    <button class="btn-stats tag" data-qtd="100">100</button>
+                </div>
+
+                <p class="label" style="margin-bottom: 10px;">Busca personalizada:</p>
+                <div class="custom-stats">
+                    <input type="number" id="stats-custom" placeholder="Qtd. ex: 25">
+                    <button id="btn-stats-custom" class="btn-icon">🔍</button>
+                </div>
+
+                <div id="resultado-stats" class="stats-display">
+                    <span class="placeholder-text">-- Resultados aqui --</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card gerenciamento">
+            <div class="card-header">
+                <h3>Banco de Dados (Gerenciamento)</h3>
+            </div>
+            <div class="card-body scrollable">
+                <div class="crud-group">
+                    <h4>Buscar ID</h4>
+                    <div class="input-row">
+                        <input type="number" id="buscar-id" min="1" placeholder="ID" oninput="if(this.value < 1) this.value = ''">
+                        <button id="btn-buscar" class="btn btn-primary btn-small">Buscar</button>
+                    </div>
+                    <div id="resultado-busca" class="result-box">Resultados...</div>
+                </div>
+
+                <hr>
+
+                <div class="crud-group">
+                    <h4>Atualizar Registro</h4>
+                    <div class="input-row">
+                        <input type="number" id="atualizar-id" min="1" placeholder="ID" oninput="if(this.value < 1) this.value = ''">
+                    </div>
+                    <textarea id="atualizar-texto" rows="2" placeholder="Novo texto..." style="margin-bottom: 10px;"></textarea>
+                    <button id="btn-atualizar" class="btn btn-warning full-width">Salvar Alterações</button>
+                    <div id="resultado-atualizacao" class="result-box">Resultado da atualização...</div>
+                </div>
+
+                <hr>
+
+                <div class="crud-group" style="padding-bottom: 20px;">
+                    <h4>Área de Perigo</h4>
+                    <div class="input-row delete-row">
+                        <input type="number" id="deletar-id" min="1" placeholder="ID para deletar" oninput="if(this.value < 1) this.value = ''">
+                        <button id="btn-deletar" class="btn btn-danger btn-small">Excluir</button>
+                    </div>
+                    <div id="mensagem-delete" style="margin-top: 12px; font-size: 0.9rem; font-weight: 500;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card ultimos-comentarios">
+            <div class="card-header">
+                <h3>Últimos Comentários</h3>
+            </div>
+            <div class="card-body scrollable">
+                <div id="lista-comentarios">
+                    <p style="color: var(--text-secondary);">Carregando...</p>
+                </div>
+
+                <div class="paginacao" style="margin-top: 20px;">
+                    <button id="prev-page" class="btn-secondary">⬅ Anterior</button>
+                    <span id="page-info">Página 1</span>
+                    <button id="next-page" class="btn-secondary">Próxima ➡</button>
+                </div>
+            </div>
+        </div>
+
+    </section>
+</main>
+
+<script type="module" src="/js/main.js"></script>
+
+</body>
+</html>

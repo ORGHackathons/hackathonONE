@@ -1,0 +1,22 @@
+
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: ${DB_URL}
+    username: ${DB_USER_HACKATHON}
+    password: ${DB_PASSWORD_HACKATHON}
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+
+    properties:
+      hibernate:
+        jdbc:
+          lob:
+            non_contextual_creation: true
+
+            ia:
+              service:
+                url: http://sentimento-ia-python:5000/predict
